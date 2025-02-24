@@ -9,7 +9,9 @@ def main():
     else:
         print("Error with connection")
 
-    instance.get_deck()
+    response = instance.get_user_decks(1)
+    for item in response:
+        print(item)
 
 if __name__ == "__main__":
     main()
