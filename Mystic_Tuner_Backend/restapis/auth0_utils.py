@@ -1,6 +1,7 @@
 import json
 import requests
 from jose import jwt 
+from jose import jwk
 import os
 from dotenv import load_dotenv
 
@@ -24,7 +25,7 @@ def validate_auth0_jwt(token):
         if not rsa_key:
             raise ValueError("Invalid Key: No matching public key found")
         
-        public_key = jwt.algorithms.RSAAlgorithm.from_jwk(json.dumps(rsa_key))
+        public_key = jwk.construct(rsa_key)
         decoded_token = jwt.decode(
             token, 
             public_key,
