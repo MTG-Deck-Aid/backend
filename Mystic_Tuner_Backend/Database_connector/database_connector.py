@@ -3,6 +3,23 @@ from psycopg2 import sql
 from psycopg2.extras import execute_values
 
 class DatabaseConnector():
+    """
+    Singleton connector class that handles all database querys from the backend
+    
+    Here's the list of methods:
+    test_connection(): used to verify the connector can connect to the database
+    get_deck(): using deck_id, gets all cards associated with the deck
+    get_card(): using cardname gets all instances of a single type of card accross all decks
+    get_user_decks(): using userId, gets all deck associated with the user.
+    validate_card(): used to verify if the cardname is a valid magic card name
+    add_cards_to_deck(): Takes in a list of dictionaries of cards to update the database.  Read the method's header for details
+    delete_cards_from_deck(): using list of cardnames and deck_id, deletes those cards from that deck
+    add_deck(): creates a new empty deck.  Duplicate deck names for the same user will throw an exception
+    delete_deck(): deletes the deck.  All associated cards with that deck should delete via CASCADE as well
+    update_card_repository(): takes in a list of card names and adds whatever isn't already in the table
+    clear_card_repository(): COMPLETELY deletes all rows from the CardNames table
+    """
+
     __instance = None
 
     def __new__(cls, *args, **kwargs):
@@ -33,7 +50,7 @@ class DatabaseConnector():
         except Exception as e:
             print(f"Error: {e}")
 
-    def execute_query(self, query, params = None, is_select = True):
+    def _execute_query(self, query, params = None, is_select = True):
         try:
 
             cursor = self.connection.cursor()
@@ -64,7 +81,7 @@ class DatabaseConnector():
         main purpose is for troubleshooting.  Returns true if the connection was successful
         """
 
-        result = self.execute_query("SELECT version();")
+        result = self._execute_query("SELECT version();")
 
         if(result != False):
             print(F"Connection successfully established: {result}")
@@ -76,22 +93,22 @@ class DatabaseConnector():
     def get_deck(self, deck_id):
         query = "SELECT * FROM public.\"Card\" WHERE \"deckid\" = %s ORDER BY id ASC;"
         params = (deck_id,)
-        return self.execute_query(query, params)
+        return self._execute_query(query, params)
 
     def get_card(self, card_name):
         query = "SELECT * FROM public.\"Card\" WHERE \"cardname\" = %s ORDER BY id ASC;"
         params = (card_name,)
-        return self.execute_query(query, params)
+        return self._execute_query(query, params)
     
     def get_user_decks(self, user_id):
         query = "SELECT * FROM public.\"Deck\" WHERE \"userId\" = %s ORDER BY \"DID\" ASC;"
         params = (user_id,)
-        return self.execute_query(query, params)
+        return self._execute_query(query, params)
 
     def validate_card(self, card_name):
         query = "SELECT * FROM public.\"CardNames\" where \"name\" = %s;"
         params = (card_name,)
-        result = self.execute_query(query, params)
+        result = self._execute_query(query, params)
 
         if len(result) > 0:
             #Card exists in card repository
@@ -107,8 +124,16 @@ class DatabaseConnector():
         sideboard: boolean
         cardtype: string (can be None)
         count: integer
-        
         deckid: the deck to insert the cards into
+
+        EXAMPLE:
+        cards = [
+        {'cardname': 'Card A', 'sideboard': False, 'cardtype': 'Creature', 'count': 3},
+        {'cardname': 'Card B', 'sideboard': True, 'cardtype': 'Sorcery', 'count': 2}
+        ]
+
+        If an inputted card already exists within the deck, instead the count of that row is incremented by the
+        value passed in by the list.
         """
         cards = cards.copy()
         query = "SELECT * FROM public.\"Card\" WHERE cardname IN %s;"
@@ -117,7 +142,7 @@ class DatabaseConnector():
 
         print(card_names)
         params = (tuple(card_names), )
-        results = self.execute_query(query, params)
+        results = self._execute_query(query, params)
 
         print(results)
 
@@ -131,7 +156,7 @@ class DatabaseConnector():
                 print(existing_row[2])
                 query = "UPDATE public.\"Card\" SET count = count + %s WHERE cardname = %s AND deckid = %s;"
                 params = (int(card['count']), existing_row[2], deck_id)
-                self.execute_query(query, params, False)
+                self._execute_query(query, params, False)
                 cards.remove(card)
                 break
             
@@ -146,13 +171,15 @@ class DatabaseConnector():
             self.connection.commit()
 
     def delete_cards_from_deck(self, cards, deck_id):
+        """
+        args:   cards (String[]) - names of cards to delete
+                deck_id (int)
         
+        """
         query =  "DELETE FROM public.\"Card\" WHERE cardname IN %s AND deckid = %s;"
-        cardnames = [card['cardname'] for card in cards]
-        params = (tuple(cardnames), deck_id)
+        params = (tuple(cards), deck_id)
 
-        print(cardnames)
-        self.execute_query(query, params, False)
+        self._execute_query(query, params, False)
 
     def add_deck(self, user_id, deck_type, deck_name):
 
@@ -163,14 +190,14 @@ class DatabaseConnector():
         query = "INSERT INTO public.\"Deck\" (\"userId\", \"deckType\", \"deckName\") VALUES (%s, %s, %s);"
         params = (user_id, deck_type, deck_name)
 
-        self.execute_query(query, params, False)
+        self._execute_query(query, params, False)
 
     def delete_deck(self, user_id, deck_name):
 
         query = "DELETE FROM public.\"Deck\" WHERE \"userId\" = %s AND \"deckName\" = %s;"
         params = (user_id, deck_name)
 
-        self.execute_query(query, params, False)
+        self._execute_query(query, params, False)
 
     def update_card_repository(self, cards):
 
@@ -185,4 +212,4 @@ class DatabaseConnector():
 
         query = "DELETE FROM public.\"CardNames\""
 
-        self.execute_query(query, None, False)
+        self._execute_query(query, None, False)
