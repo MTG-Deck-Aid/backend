@@ -33,7 +33,7 @@ class DatabaseConnector():
         except Exception as e:
             print(f"Error: {e}")
 
-    def execute_query(self, query, params = None):
+    def execute_query(self, query, params = None, is_select = True):
         try:
 
             cursor = self.connection.cursor()
@@ -43,9 +43,15 @@ class DatabaseConnector():
             else:
                 cursor.execute(query, params)
             
-            return cursor.fetchall()
+
+
+            print(f"Rows affected: {cursor.rowcount}")
+            if(is_select):
+                return cursor.fetchall()
+            else:
+                self.connection.commit()
         except Exception as e:
-            print(f"Error: {e}")
+            print(f"With query: {query} \nHas error: {e}")
             return False
 
 
@@ -70,19 +76,16 @@ class DatabaseConnector():
 
         
     def get_deck(self, deckid):
-
         query = "SELECT * FROM public.\"Card\" WHERE \"deckid\" = %s ORDER BY id ASC;"
         params = (deckid,)
         return self.execute_query(query, params)
 
     def get_card(self, cardName):
-
         query = "SELECT * FROM public.\"Card\" WHERE \"cardname\" = %s ORDER BY id ASC;"
         params = (cardName,)
         return self.execute_query(query, params)
     
     def get_user_decks(self, userid):
-
         query = "SELECT * FROM public.\"Deck\" WHERE \"userId\" = %s ORDER BY \"DID\" ASC;"
         params = (userid,)
         return self.execute_query(query, params)
@@ -109,12 +112,39 @@ class DatabaseConnector():
         
         deckid: the deck to insert the cards into
         """
-        query = "INSERT INTO public.\"Card\" (deckid, cardname, sideboard, cardtype, count)VALUES %s"
+        query = "SELECT * FROM public.\"Card\" WHERE cardname IN %s;"
+
+        cardnames = [card['cardname'] for card in cards]
+
+        print(cardnames)
+        params = (tuple(cardnames), )
+        results = self.execute_query(query, params)
+
+        print(results)
+
+        for existing_row in results:
+            for card in cards:
+                if(card['cardname'] != existing_row[2]):
+                    continue
+                   
+                print(f"Cardname: {card['cardname']}, existing count: {existing_row[5]}, added count: {card['count']}")
+
+                print(existing_row[2])
+                query = "UPDATE public.\"Card\" SET count = count + %s WHERE cardname = %s AND deckid = %s"
+                params = (int(card['count']), existing_row[2], deckid)
+                self.execute_query(query, params, False)
+                cards.remove(card)
+                break
+            
         
-        params = [(deckid, card['cardname'], card['sideboard'], card['cardtype'], card['count']) for card in cards]
+        if(len(cards) != 0):
+            query = "INSERT INTO public.\"Card\" (deckid, cardname, sideboard, cardtype, count)VALUES %s;"
 
-        execute_values(self.connection.cursor(), query, params)
+            params = [(deckid, card['cardname'], card['sideboard'], card['cardtype'], card['count']) for card in cards]
+            print(params)
+            execute_values(self.connection.cursor(), query, params)
 
-        self.connection.commit()
+            self.connection.commit()
+
     def delete_cards_from_deck(self, cards, deckid):
         pass

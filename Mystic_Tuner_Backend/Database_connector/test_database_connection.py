@@ -22,7 +22,8 @@ def main():
     for item in response:
         print(item)
     
-    instance.delete_cards_from_deck(cards, 1)
+    instance.add_cards_to_deck(cards, 1)
+
 
 if __name__ == "__main__":
     main()
