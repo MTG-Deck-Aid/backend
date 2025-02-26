@@ -1,6 +1,6 @@
 from database_connector import DatabaseConnector 
 def main():
-
+    """
     cards = [
     {'cardname': 'Card A', 'sideboard': False, 'cardtype': 'Creature', 'count': 3},
     {'cardname': 'Card B', 'sideboard': True, 'cardtype': 'Sorcery', 'count': 2},
@@ -25,7 +25,15 @@ def main():
     instance.add_cards_to_deck(cards, 1)
 
     instance.delete_cards_from_deck(cards, 1)
+    """
 
+    instance = DatabaseConnector()
+
+    try:
+        instance.add_deck(1, "Commander", "TEST_DECK 1")
+    except:
+        pass
+    instance.delete_deck(1, "TEST_DECK 1")
 
 if __name__ == "__main__":
     main()

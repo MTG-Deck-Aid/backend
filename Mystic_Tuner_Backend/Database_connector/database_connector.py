@@ -153,3 +153,21 @@ class DatabaseConnector():
 
         print(cardnames)
         self.execute_query(query, params, False)
+
+    def add_deck(self, user_id, deck_type, deck_name):
+
+        for deck in self.get_user_decks(user_id):
+            if(deck_name == deck[2]):
+                raise ValueError("DeckName already exists")
+
+        query = "INSERT INTO public.\"Deck\" (\"userId\", \"deckType\", \"deckName\") VALUES (%s, %s, %s);"
+        params = (user_id, deck_type, deck_name)
+
+        self.execute_query(query, params, False)
+
+    def delete_deck(self, user_id, deck_name):
+
+        query = "DELETE FROM public.\"Deck\" WHERE \"userId\" = %s AND \"deckName\" = %s;"
+        params = (user_id, deck_name)
+
+        self.execute_query(query, params, False)
