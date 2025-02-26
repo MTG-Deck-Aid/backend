@@ -73,8 +73,6 @@ class DatabaseConnector():
             print("Failled to connect to database")
             return False
 
-
-        
     def get_deck(self, deckid):
         query = "SELECT * FROM public.\"Card\" WHERE \"deckid\" = %s ORDER BY id ASC;"
         params = (deckid,)
@@ -112,6 +110,7 @@ class DatabaseConnector():
         
         deckid: the deck to insert the cards into
         """
+        cards = cards.copy()
         query = "SELECT * FROM public.\"Card\" WHERE cardname IN %s;"
 
         cardnames = [card['cardname'] for card in cards]
@@ -130,7 +129,7 @@ class DatabaseConnector():
                 print(f"Cardname: {card['cardname']}, existing count: {existing_row[5]}, added count: {card['count']}")
 
                 print(existing_row[2])
-                query = "UPDATE public.\"Card\" SET count = count + %s WHERE cardname = %s AND deckid = %s"
+                query = "UPDATE public.\"Card\" SET count = count + %s WHERE cardname = %s AND deckid = %s;"
                 params = (int(card['count']), existing_row[2], deckid)
                 self.execute_query(query, params, False)
                 cards.remove(card)
@@ -147,4 +146,10 @@ class DatabaseConnector():
             self.connection.commit()
 
     def delete_cards_from_deck(self, cards, deckid):
-        pass
+        
+        query =  "DELETE FROM public.\"Card\" WHERE cardname IN %s AND deckid = %s;"
+        cardnames = [card['cardname'] for card in cards]
+        params = (tuple(cardnames), deckid)
+
+        print(cardnames)
+        self.execute_query(query, params, False)

@@ -24,6 +24,8 @@ def main():
     
     instance.add_cards_to_deck(cards, 1)
 
+    instance.delete_cards_from_deck(cards, 1)
+
 
 if __name__ == "__main__":
     main()
