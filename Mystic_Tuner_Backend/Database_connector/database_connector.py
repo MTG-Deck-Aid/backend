@@ -51,7 +51,7 @@ class DatabaseConnector():
             else:
                 self.connection.commit()
         except Exception as e:
-            print(f"With query: {query} \nHas error: {e}")
+            print(f"With query: {query}\nWith params: {params}\nHas error: {e}")
             return False
 
 
@@ -73,24 +73,24 @@ class DatabaseConnector():
             print("Failled to connect to database")
             return False
 
-    def get_deck(self, deckid):
+    def get_deck(self, deck_id):
         query = "SELECT * FROM public.\"Card\" WHERE \"deckid\" = %s ORDER BY id ASC;"
-        params = (deckid,)
+        params = (deck_id,)
         return self.execute_query(query, params)
 
-    def get_card(self, cardName):
+    def get_card(self, card_name):
         query = "SELECT * FROM public.\"Card\" WHERE \"cardname\" = %s ORDER BY id ASC;"
-        params = (cardName,)
+        params = (card_name,)
         return self.execute_query(query, params)
     
-    def get_user_decks(self, userid):
+    def get_user_decks(self, user_id):
         query = "SELECT * FROM public.\"Deck\" WHERE \"userId\" = %s ORDER BY \"DID\" ASC;"
-        params = (userid,)
+        params = (user_id,)
         return self.execute_query(query, params)
 
-    def validate_card(self, cardName):
+    def validate_card(self, card_name):
         query = "SELECT * FROM public.\"CardNames\" where \"name\" = %s;"
-        params = (cardName,)
+        params = (card_name,)
         result = self.execute_query(query, params)
 
         if len(result) > 0:
@@ -99,7 +99,7 @@ class DatabaseConnector():
         else:
             return False
     
-    def add_cards_to_deck(self, cards, deckid):
+    def add_cards_to_deck(self, cards, deck_id):
         """
         arguments:
         cards: a list of dictionaries with the format of each dictionary being:
@@ -113,10 +113,10 @@ class DatabaseConnector():
         cards = cards.copy()
         query = "SELECT * FROM public.\"Card\" WHERE cardname IN %s;"
 
-        cardnames = [card['cardname'] for card in cards]
+        card_names = [card['cardname'] for card in cards]
 
-        print(cardnames)
-        params = (tuple(cardnames), )
+        print(card_names)
+        params = (tuple(card_names), )
         results = self.execute_query(query, params)
 
         print(results)
@@ -130,7 +130,7 @@ class DatabaseConnector():
 
                 print(existing_row[2])
                 query = "UPDATE public.\"Card\" SET count = count + %s WHERE cardname = %s AND deckid = %s;"
-                params = (int(card['count']), existing_row[2], deckid)
+                params = (int(card['count']), existing_row[2], deck_id)
                 self.execute_query(query, params, False)
                 cards.remove(card)
                 break
@@ -139,17 +139,17 @@ class DatabaseConnector():
         if(len(cards) != 0):
             query = "INSERT INTO public.\"Card\" (deckid, cardname, sideboard, cardtype, count)VALUES %s;"
 
-            params = [(deckid, card['cardname'], card['sideboard'], card['cardtype'], card['count']) for card in cards]
+            params = [(deck_id, card['cardname'], card['sideboard'], card['cardtype'], card['count']) for card in cards]
             print(params)
             execute_values(self.connection.cursor(), query, params)
 
             self.connection.commit()
 
-    def delete_cards_from_deck(self, cards, deckid):
+    def delete_cards_from_deck(self, cards, deck_id):
         
         query =  "DELETE FROM public.\"Card\" WHERE cardname IN %s AND deckid = %s;"
         cardnames = [card['cardname'] for card in cards]
-        params = (tuple(cardnames), deckid)
+        params = (tuple(cardnames), deck_id)
 
         print(cardnames)
         self.execute_query(query, params, False)
@@ -171,3 +171,18 @@ class DatabaseConnector():
         params = (user_id, deck_name)
 
         self.execute_query(query, params, False)
+
+    def update_card_repository(self, cards):
+
+        query = "INSERT INTO public.\"CardNames\" (name) VALUES %s ON CONFLICT DO NOTHING;"
+
+        params = [(card,) for card in cards]
+        execute_values(self.connection.cursor(), query, params)
+
+        self.connection.commit()
+
+    def clear_card_repository(self):
+
+        query = "DELETE FROM public.\"CardNames\""
+
+        self.execute_query(query, None, False)

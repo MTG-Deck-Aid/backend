@@ -26,14 +26,11 @@ def main():
 
     instance.delete_cards_from_deck(cards, 1)
     """
-
+    cards = ["Card A", "Card B", "Card C"]
     instance = DatabaseConnector()
 
-    try:
-        instance.add_deck(1, "Commander", "TEST_DECK 1")
-    except:
-        pass
-    instance.delete_deck(1, "TEST_DECK 1")
+    instance.update_card_repository(cards)
+    instance.clear_card_repository()
 
 if __name__ == "__main__":
     main()
