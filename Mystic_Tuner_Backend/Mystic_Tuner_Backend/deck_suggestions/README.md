@@ -9,3 +9,9 @@ The goal of this module is to generate MTG deck suggestions with generative AI. 
 The prompt.txt file was generated with the help of [Google AI Studio](https://aistudio.google.com/prompts/new_chat).
 
 The Google Gemini Documentation can be found [here](https://ai.google.dev/gemini-api/docs/quickstart?authuser=2&lang=python).
+
+# TODO
+
+- [ ] Rate Limiting
+- [ ] Production Deployment Requirements
+- [ ] API Key Security
