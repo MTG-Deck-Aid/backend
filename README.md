@@ -30,7 +30,7 @@ cd ./Mystic_Tuner_Backend
 pip install -r requirements.txt
 ```
 
-1. Make a .env file in the Mystic_Tuner_Backend directory and add the following:
+5. Make a .env file in the Mystic_Tuner_Backend directory and add the following:
 
 ```bash
 AUTH0_CLIENT_ID=''
@@ -38,11 +38,11 @@ AUTH0_CLIENT_SECRET=''
 AUTH0_DOMAIN=''
 ```
 
-7.  Run the development server (django)
+6.  Run the development server (django)
 
 ```bash
 python manage.py runserver
 ```
 
-8. Open [http://localhost:8000](http://localhost:8000) with your browser to see the result.
-9. Use Postman to test the API endpoints
+7. Open [http://localhost:8000](http://localhost:8000) with your browser to see the result.
+8. Use Postman to test the API endpoints
