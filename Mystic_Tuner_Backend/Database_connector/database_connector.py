@@ -4,20 +4,7 @@ from psycopg2.extras import execute_values
 
 class DatabaseConnector():
     """
-    Singleton connector class that handles all database querys from the backend
-    
-    Here's the list of methods:
-    test_connection(): used to verify the connector can connect to the database
-    get_deck(): using deck_id, gets all cards associated with the deck
-    get_card(): using cardname gets all instances of a single type of card accross all decks
-    get_user_decks(): using userId, gets all deck associated with the user.
-    validate_card(): used to verify if the cardname is a valid magic card name
-    add_cards_to_deck(): Takes in a list of dictionaries of cards to update the database.  Read the method's header for details
-    delete_cards_from_deck(): using list of cardnames and deck_id, deletes those cards from that deck
-    add_deck(): creates a new empty deck.  Duplicate deck names for the same user will throw an exception
-    delete_deck(): deletes the deck.  All associated cards with that deck should delete via CASCADE as well
-    update_card_repository(): takes in a list of card names and adds whatever isn't already in the table
-    clear_card_repository(): COMPLETELY deletes all rows from the CardNames table
+    Singleton connector class that excutes queries passed to it
     """
 
     _instance = None
@@ -27,36 +14,55 @@ class DatabaseConnector():
             cls._instance = super().__new__(cls)
         return cls._instance
 
-
-
-    def __init__(self):
-        # Database connection parameters
-        self.host = "localhost"  # Example: localhost or an IP address
-        self.dbname = "Mystic_Tuner_Application"  # Your database name
-        self.user = "MT_Admin"  # Your database username
-        self.password = "admin"  # Your database password
-        self.port = "5433"  # Default PostgreSQL port
-
+    def __init__(self, host, database_name, user, password, port):
+        """
+        args:
+            host (String) - host IP 
+            database_name (String) - name of database
+            user (String) - database user username
+            password (String) - database user password
+            port (int) - port of the database
+        return:
+            nothing
+        """
         try:
             self.connection = psycopg2.connect(
-                host=self.host,
-                dbname=self.dbname,
-                user=self.user,
-                password=self.password,
-                port=self.port
+                host = host,
+                dbname = database_name,
+                user = user,
+                password = password,
+                port = port
             )
-            print("Connection successful")
+            print("Connection successfully established with database")
 
         except Exception as e:
             print(f"Could not establish connection to database: {e}")
 
     @staticmethod
     def get_instance(self):
+        """
+        args:
+            Nothing
+        return:
+            (DatabaseConnector) - singleton instance of the database connector
+        """
         if self._instance == None:
             self._instance = DatabaseConnector()
         return self._instance
 
     def execute_query(self, query, params = None, is_select = True):
+        """
+        args:
+            query (String) - base SQL query
+            params (tuple) - tuple of values for the query
+            is_select (boolean) - true if the query is a select query
+        return:
+            results of query
+                - list of rows for select queries (List)
+                - number of rows affected for all other (int)
+        
+        designed for majority of possible SQL queries
+        """
         try:
 
             cursor = self.connection.cursor()
@@ -79,6 +85,17 @@ class DatabaseConnector():
             return False
 
     def execute_long_query(self, query, params):
+        """
+        args:
+            query (String) - base SQL query
+            params (tuple) - tuple of values for the query
+            is_select (boolean) - true if the query is a select query
+        return:
+            (int) number of rows affected 
+        
+        designed for the few more complex SQL queries; typically queries involving inserting 
+        a bulk of rows at once
+        """
         try:
             cursor = self.connection.cursor()
 
@@ -114,7 +131,7 @@ class DatabaseConnector():
 
 
 
-
+#DELETE after testing
     def get_deck(self, deck_id):
         query = "SELECT * FROM public.\"Card\" WHERE \"deckid\" = %s ORDER BY id ASC;"
         params = (deck_id,)

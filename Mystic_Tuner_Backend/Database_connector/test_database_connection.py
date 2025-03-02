@@ -1,4 +1,12 @@
 from database_connector import DatabaseConnector 
+"""
+        self.host = "localhost"  # Example: localhost or an IP address
+        self.dbname = "Mystic_Tuner_Application"  # Your database name
+        self.user = "MT_Admin"  # Your database username
+        self.password = "admin"  # Your database password
+        self.port = "5433"  # Default PostgreSQL port
+"""
+
 def main():
     
     cards = [
