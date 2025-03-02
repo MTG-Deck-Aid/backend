@@ -41,3 +41,26 @@ def AuthenticateLogin(request):
     user_info = user_info_response.json()
 
     return JsonResponse({'access_token': access_token, 'user_info': user_info})
+
+def getMagicImage(request):
+    card_name = request.GET.get('card_name')
+    image_size = request.GET.get('image_size')
+    if not card_name:
+        return JsonResponse({'error': 'Card name is required'}, status=400)
+
+    scryfall_url = f"https://api.scryfall.com/cards/named?exact={urllib.parse.quote(card_name)}" 
+    headers = {
+        'User-Agent': 'MysticTunerApp',
+        'Accept': 'application/json'
+    }
+    response = requests.get(scryfall_url, headers=headers)
+    card_data = response.json()
+
+    if response.status_code != 200:
+        return JsonResponse({'error': card_data.get('details', 'Error fetching card data')}, status=response.status_code)
+
+    card_images = card_data.get('image_uris', {})
+    if not card_images:
+        return JsonResponse({'error': 'Card images not found'}, status=404)
+    card_image = card_images.get(image_size)
+    return JsonResponse({'card_image_url': card_image})
