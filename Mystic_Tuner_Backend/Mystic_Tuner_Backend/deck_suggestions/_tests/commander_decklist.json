@@ -1,0 +1,459 @@
+{
+  "deckName": "Test Deck",
+  "gameType": "commander",
+  "gameQuantity": 100,
+  "commander": "Marchesa, the Black Rose",
+
+  "deckList": [
+    {
+      "name": "Marchesa, the Black Rose",
+      "colors": ["black", "blue", "red"],
+      "quantity": 1
+    },
+    {
+      "name": "Academy Ruins",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Aether Channeler",
+      "colors": ["blue"],
+      "quantity": 1
+    },
+    {
+      "name": "Altar of Dementia",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "An Offer You Can't Refuse",
+      "colors": ["black", "red"],
+      "quantity": 1
+    },
+    {
+      "name": "Arcane Signet",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Ashnod's Altar",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Atsushi, the Blazing Sky",
+      "colors": ["red"],
+      "quantity": 1
+    },
+    {
+      "name": "Baleful Strix",
+      "colors": ["blue", "black"],
+      "quantity": 1
+    },
+    {
+      "name": "Bedevil",
+      "colors": ["black", "red"],
+      "quantity": 1
+    },
+    {
+      "name": "Blackcleave Cliffs",
+      "colors": ["black", "red"],
+      "quantity": 1
+    },
+    {
+      "name": "Blasphemous Act",
+      "colors": ["red"],
+      "quantity": 1
+    },
+    {
+      "name": "Blood Artist",
+      "colors": ["black"],
+      "quantity": 1
+    },
+    {
+      "name": "Body Launderer",
+      "colors": ["black"],
+      "quantity": 1
+    },
+    {
+      "name": "Carrion Feeder",
+      "colors": ["black"],
+      "quantity": 1
+    },
+    {
+      "name": "Cavern of Souls",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Chaos Warp",
+      "colors": ["red"],
+      "quantity": 1
+    },
+    {
+      "name": "Command Tower",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Counterspell",
+      "colors": ["blue"],
+      "quantity": 1
+    },
+    {
+      "name": "Crumbling Necropolis",
+      "colors": ["blue", "black", "red"],
+      "quantity": 1
+    },
+    {
+      "name": "Cytoplast Manipulator",
+      "colors": ["blue"],
+      "quantity": 1
+    },
+    {
+      "name": "Dauthi Voidwalker",
+      "colors": ["black"],
+      "quantity": 1
+    },
+    {
+      "name": "Demonic Tutor",
+      "colors": ["black"],
+      "quantity": 1
+    },
+    {
+      "name": "Diabolic Intent",
+      "colors": ["black"],
+      "quantity": 1
+    },
+    {
+      "name": "Dictate of Erebos",
+      "colors": ["black"],
+      "quantity": 1
+    },
+    {
+      "name": "Dimir Signet",
+      "colors": ["blue", "black"],
+      "quantity": 1
+    },
+    {
+      "name": "Exotic Orchard",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Fabled Passage",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Feed the Swarm",
+      "colors": ["black"],
+      "quantity": 1
+    },
+    {
+      "name": "Flayer of the Hatebound",
+      "colors": ["red"],
+      "quantity": 1
+    },
+    {
+      "name": "Glen Elendra Archmage",
+      "colors": ["blue"],
+      "quantity": 1
+    },
+    {
+      "name": "Goblin Bombardment",
+      "colors": ["red"],
+      "quantity": 1
+    },
+    {
+      "name": "Graven Cairns",
+      "colors": ["black", "red"],
+      "quantity": 1
+    },
+    {
+      "name": "Grim Haruspex",
+      "colors": ["black"],
+      "quantity": 1
+    },
+    {
+      "name": "Guildmages' Forum",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "High Market",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Imperial Recruiter",
+      "colors": ["red"],
+      "quantity": 1
+    },
+    {
+      "name": "Iron Apprentice",
+      "colors": ["blue"],
+      "quantity": 1
+    },
+    {
+      "name": "Island",
+      "colors": ["blue"],
+      "quantity": 4
+    },
+    {
+      "name": "Izzet Signet",
+      "colors": ["blue", "red"],
+      "quantity": 1
+    },
+    {
+      "name": "Juri, Master of the Revue",
+      "colors": ["black", "red"],
+      "quantity": 1
+    },
+    {
+      "name": "Lim-Dûl's Vault",
+      "colors": ["black"],
+      "quantity": 1
+    },
+    {
+      "name": "Mark of Mutiny",
+      "colors": ["red"],
+      "quantity": 1
+    },
+    {
+      "name": "Metallic Mimic",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Midnight Reaper",
+      "colors": ["black"],
+      "quantity": 1
+    },
+    {
+      "name": "Mikaeus, the Unhallowed",
+      "colors": ["black"],
+      "quantity": 1
+    },
+    {
+      "name": "Mind Stone",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Mountain",
+      "colors": ["red"],
+      "quantity": 4
+    },
+    {
+      "name": "Murderous Redcap",
+      "colors": ["black", "red"],
+      "quantity": 1
+    },
+    {
+      "name": "Myr Scrapling",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Myriad Landscape",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Narset, Parter of Veils",
+      "colors": ["blue"],
+      "quantity": 1
+    },
+    {
+      "name": "Negate",
+      "colors": ["blue"],
+      "quantity": 1
+    },
+    {
+      "name": "Opal Palace",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Path of Ancestry",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Propaganda",
+      "colors": ["blue"],
+      "quantity": 1
+    },
+    {
+      "name": "Puppeteer Clique",
+      "colors": ["blue", "black"],
+      "quantity": 1
+    },
+    {
+      "name": "Rakdos Charm",
+      "colors": ["black", "red"],
+      "quantity": 1
+    },
+    {
+      "name": "Rakdos Signet",
+      "colors": ["black", "red"],
+      "quantity": 1
+    },
+    {
+      "name": "River Kelpie",
+      "colors": ["blue"],
+      "quantity": 1
+    },
+    {
+      "name": "Sage of Fables",
+      "colors": ["blue"],
+      "quantity": 1
+    },
+    {
+      "name": "Shivan Reef",
+      "colors": ["blue", "red"],
+      "quantity": 1
+    },
+    {
+      "name": "Sidisi, Undead Vizier",
+      "colors": ["black"],
+      "quantity": 1
+    },
+    {
+      "name": "Skullclamp",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Smoldering Marsh",
+      "colors": ["black", "red"],
+      "quantity": 1
+    },
+    {
+      "name": "Sneak Attack",
+      "colors": ["red"],
+      "quantity": 1
+    },
+    {
+      "name": "Sol Ring",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Solemn Simulacrum",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Spark Double",
+      "colors": ["blue"],
+      "quantity": 1
+    },
+    {
+      "name": "Stormcarved Coast",
+      "colors": ["blue", "red"],
+      "quantity": 1
+    },
+    {
+      "name": "Sulfurous Springs",
+      "colors": ["black", "red"],
+      "quantity": 1
+    },
+    {
+      "name": "Swamp",
+      "colors": ["black"],
+      "quantity": 5
+    },
+    {
+      "name": "Talisman of Creativity",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Talisman of Dominance",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Talisman of Indulgence",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Temple of Deceit",
+      "colors": ["blue", "black"],
+      "quantity": 1
+    },
+    {
+      "name": "Temple of Epiphany",
+      "colors": ["blue", "red"],
+      "quantity": 1
+    },
+    {
+      "name": "Temple of Malice",
+      "colors": ["black", "red"],
+      "quantity": 1
+    },
+    {
+      "name": "The Ozolith",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Thran Vigil",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Thundering Raiju",
+      "colors": ["red"],
+      "quantity": 1
+    },
+    {
+      "name": "Tyrite Sanctum",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Uncivil Unrest",
+      "colors": ["black", "red"],
+      "quantity": 1
+    },
+    {
+      "name": "Underground River",
+      "colors": ["blue", "black"],
+      "quantity": 1
+    },
+    {
+      "name": "Unspeakable Symbol",
+      "colors": ["black"],
+      "quantity": 1
+    },
+    {
+      "name": "Vampiric Tutor",
+      "colors": ["black"],
+      "quantity": 1
+    },
+    {
+      "name": "Vigean Graftmage",
+      "colors": ["blue"],
+      "quantity": 1
+    },
+    {
+      "name": "Viscera Seer",
+      "colors": ["black"],
+      "quantity": 1
+    },
+    {
+      "name": "Withering Torment",
+      "colors": ["black"],
+      "quantity": 1
+    },
+    {
+      "name": "Wurmcoil Engine",
+      "colors": ["colorless"],
+      "quantity": 1
+    }
+  ]
+}

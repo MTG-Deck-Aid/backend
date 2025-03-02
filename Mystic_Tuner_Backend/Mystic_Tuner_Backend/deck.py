@@ -22,6 +22,12 @@ class Deck:
         self.game: game.Game = game_type
         self.card_list: list[Card] = card_list
 
+    def __str__(self):
+        res = f"Deck: {self.name}\nGame Type: {self.game}\nCard List:"
+        for card in self.card_list:
+            res += f"\n{card}"
+        return res
+
     @classmethod
     def from_json(cls, json_deck: dict):
         """

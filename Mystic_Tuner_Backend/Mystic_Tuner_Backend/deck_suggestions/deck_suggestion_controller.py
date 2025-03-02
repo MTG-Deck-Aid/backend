@@ -32,10 +32,11 @@ class DeckSuggestionController:
         """
 
         # Get suggestions
-        decklist = Deck(json_str)
+        decklist = Deck.from_json(json_str)
         card_suggestor = CardSuggestor()
         suggestions = card_suggestor.suggest_cards(decklist)
-
+        print(suggestions)
+        print(type(suggestions))
         # Find cards needed, replace cards in suggestions with card objects
         scryfall = ScryFallEngine()
         for suggestion in suggestions:
@@ -54,9 +55,11 @@ if __name__ == "__main__":
         REST API CALL FROM FRONTEND --> JSON STRING IN ROUTE /suggestion
         """
         # json_str = request.get_json()
-        suggestions = DeckSuggestionController.get_suggestions(json_str={})
+        suggestions = DeckSuggestionController.get_suggestions({})
         return {
             "status": "success",
             "code": 200,
             "data": suggestions,
         }
+
+    suggestions()
