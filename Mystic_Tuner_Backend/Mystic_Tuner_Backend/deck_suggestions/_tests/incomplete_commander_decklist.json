@@ -1,0 +1,34 @@
+{
+  "deckName": "Test Deck",
+  "gameType": "commander",
+  "gameQuantity": 100,
+  "commander": "Marchesa, the Black Rose",
+  "deckList": [
+    {
+      "name": "Marchesa, the Black Rose",
+      "colors": ["black", "blue", "red"],
+      "quantity": 1
+    },
+    {
+      "name": "Blood Artist",
+      "colors": ["black"],
+      "quantity": 1
+    },
+    { "name": "Carrion Feeder", "colors": ["black"], "quantity": 1 },
+    {
+      "name": "Ashnod's Altar",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Sol Ring",
+      "colors": ["colorless"],
+      "quantity": 1
+    },
+    {
+      "name": "Mana Crypt",
+      "colors": ["colorless"],
+      "quantity": 1
+    }
+  ]
+}
