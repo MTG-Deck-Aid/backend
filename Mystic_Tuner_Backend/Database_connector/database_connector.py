@@ -20,12 +20,12 @@ class DatabaseConnector():
     clear_card_repository(): COMPLETELY deletes all rows from the CardNames table
     """
 
-    __instance = None
+    _instance = None
 
     def __new__(cls, *args, **kwargs):
-        if (cls.__instance is None):
-            cls.__instance = super().__new__(cls)
-        return cls.__instance
+        if (cls._instance is None):
+            cls._instance = super().__new__(cls)
+        return cls._instance
 
 
 
@@ -48,9 +48,15 @@ class DatabaseConnector():
             print("Connection successful")
 
         except Exception as e:
-            print(f"Error: {e}")
+            print(f"Could not establish connection to database: {e}")
 
-    def _execute_query(self, query, params = None, is_select = True):
+    @staticmethod
+    def get_instance(self):
+        if self._instance == None:
+            self._instance = DatabaseConnector()
+        return self._instance
+
+    def execute_query(self, query, params = None, is_select = True):
         try:
 
             cursor = self.connection.cursor()
@@ -60,55 +66,74 @@ class DatabaseConnector():
             else:
                 cursor.execute(query, params)
             
+            row_count = cursor.rowcount
 
-
-            print(f"Rows affected: {cursor.rowcount}")
+            print(f"Rows affected: {row_count}")
             if(is_select):
                 return cursor.fetchall()
             else:
                 self.connection.commit()
+                return row_count
+        except Exception as e:
+            print(f"With query: {query}\nWith params: {params}\nHas error: {e}")
+            return False
+
+    def execute_long_query(self, query, params):
+        try:
+            cursor = self.connection.cursor()
+
+            execute_values(cursor, query, params)
+
+            self.connection.commit()
+
+            row_count = cursor.rowcount
+            print(f"Rows affected: {row_count}")
+            return row_count
+
         except Exception as e:
             print(f"With query: {query}\nWith params: {params}\nHas error: {e}")
             return False
 
 
-    def test_connection(self):
-        """
-        params: self
-        returns: boolean
-        
-        attempts to establish connection to the Mystic_Tuner_Application database server
-        main purpose is for troubleshooting.  Returns true if the connection was successful
-        """
 
-        result = self._execute_query("SELECT version();")
 
-        if(result != False):
-            print(F"Connection successfully established: {result}")
-            return True
-        else:
-            print("Failled to connect to database")
-            return False
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     def get_deck(self, deck_id):
         query = "SELECT * FROM public.\"Card\" WHERE \"deckid\" = %s ORDER BY id ASC;"
         params = (deck_id,)
-        return self._execute_query(query, params)
+        return self.execute_query(query, params)
 
     def get_card(self, card_name):
         query = "SELECT * FROM public.\"Card\" WHERE \"cardname\" = %s ORDER BY id ASC;"
         params = (card_name,)
-        return self._execute_query(query, params)
+        return self.execute_query(query, params)
     
     def get_user_decks(self, user_id):
         query = "SELECT * FROM public.\"Deck\" WHERE \"userId\" = %s ORDER BY \"DID\" ASC;"
         params = (user_id,)
-        return self._execute_query(query, params)
+        return self.execute_query(query, params)
 
     def validate_card(self, card_name):
         query = "SELECT * FROM public.\"CardNames\" where \"name\" = %s;"
         params = (card_name,)
-        result = self._execute_query(query, params)
+        result = self.execute_query(query, params)
 
         if len(result) > 0:
             #Card exists in card repository
@@ -142,7 +167,7 @@ class DatabaseConnector():
 
         print(card_names)
         params = (tuple(card_names), )
-        results = self._execute_query(query, params)
+        results = self.execute_query(query, params)
 
         print(results)
 
@@ -156,7 +181,7 @@ class DatabaseConnector():
                 print(existing_row[2])
                 query = "UPDATE public.\"Card\" SET count = count + %s WHERE cardname = %s AND deckid = %s;"
                 params = (int(card['count']), existing_row[2], deck_id)
-                self._execute_query(query, params, False)
+                self.execute_query(query, params, False)
                 cards.remove(card)
                 break
             
@@ -179,7 +204,7 @@ class DatabaseConnector():
         query =  "DELETE FROM public.\"Card\" WHERE cardname IN %s AND deckid = %s;"
         params = (tuple(cards), deck_id)
 
-        self._execute_query(query, params, False)
+        self.execute_query(query, params, False)
 
     def add_deck(self, user_id, deck_type, deck_name):
 
@@ -190,14 +215,14 @@ class DatabaseConnector():
         query = "INSERT INTO public.\"Deck\" (\"userId\", \"deckType\", \"deckName\") VALUES (%s, %s, %s);"
         params = (user_id, deck_type, deck_name)
 
-        self._execute_query(query, params, False)
+        self.execute_query(query, params, False)
 
     def delete_deck(self, user_id, deck_name):
 
         query = "DELETE FROM public.\"Deck\" WHERE \"userId\" = %s AND \"deckName\" = %s;"
         params = (user_id, deck_name)
 
-        self._execute_query(query, params, False)
+        self.execute_query(query, params, False)
 
     def update_card_repository(self, cards):
 
@@ -212,4 +237,4 @@ class DatabaseConnector():
 
         query = "DELETE FROM public.\"CardNames\""
 
-        self._execute_query(query, None, False)
+        self.execute_query(query, None, False)
