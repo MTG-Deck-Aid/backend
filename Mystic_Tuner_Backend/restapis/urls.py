@@ -1,6 +1,8 @@
 from django.urls import path
-from .views import AuthenticateLoginTokenAPIView
+from . import views
 
 urlpatterns = [
-    path('Authenticate/', AuthenticateLoginTokenAPIView.as_view(), name='Authenticate'),
+    path('Authenticate/', views.AuthenticateLogin, name='Authenticate'),
+    #path('api/', include('restapis.urls')),  # Ensure this line is present
+    path('getMagicImage/', views.getMagicImage, name='getMagicImage'),
 ]
