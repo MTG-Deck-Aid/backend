@@ -18,4 +18,4 @@ class ScryFallEngine:
         returns:
             dict - The card information as a dictionary.
         """
-        pass
+        
