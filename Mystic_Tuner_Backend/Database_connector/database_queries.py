@@ -1,7 +1,5 @@
 from database_connector import DatabaseConnector
-import psycopg2
-from psycopg2 import sql
-from psycopg2.extras import execute_values
+
 class card_queries():
     """
     Class for creating queries related to the Card Table
@@ -98,6 +96,8 @@ class card_queries():
 
 
 
+
+
 class deck_queries():
     """
     Class for creating queries related to the Deck Table
@@ -180,6 +180,9 @@ class deck_queries():
         params = (user_id, deck_name)
 
         return self.connection.execute_query(query, params, False)
+
+
+
 
 
 class card_repository_queries():
