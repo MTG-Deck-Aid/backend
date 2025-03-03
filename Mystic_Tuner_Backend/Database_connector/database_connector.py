@@ -83,6 +83,7 @@ class DatabaseConnector():
                 return row_count
         except Exception as e:
             print(f"With query: {query}\nWith params: {params}\nHas error: {e}")
+            self.connection.rollback()
             return False
 
     def execute_long_query(self, query, params):
@@ -110,4 +111,5 @@ class DatabaseConnector():
 
         except Exception as e:
             print(f"With query: {query}\nWith params: {params}\nHas error: {e}")
+            self.connection.rollback()
             return False

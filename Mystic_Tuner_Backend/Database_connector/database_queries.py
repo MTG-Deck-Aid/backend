@@ -15,7 +15,7 @@ class card_queries():
             cardname: string
             sideboard: boolean
             cardtype: string (can be None)
-            count: integer
+            count: integer 
         deckid: the deck to insert the cards into
 
         EXAMPLE:
@@ -27,18 +27,27 @@ class card_queries():
         If an inputted card already exists within the deck, instead the count of that row is incremented by the
         value passed in by the list.
         """
+
         cards = cards.copy()
+
+        for card in cards:
+            if card['count'] is None or card['count'] <= 0:
+                print(f'card count must be greater than zero For card: {card['cardname']}')
+                return False
+
+
         query = "SELECT * FROM public.\"Card\" WHERE cardname IN %s;"
 
         card_names = [card['cardname'] for card in cards]
 
-        print(card_names)
         params = (tuple(card_names), )
         results = self.connection.execute_query(query, params)
 
-        print(results)
+        if(results == False):
+            return results
+
         
-        self.update_count(results, cards, deck_id)
+        self._update_count(results, cards, deck_id)
 
         if(len(cards) != 0):
             query = "INSERT INTO public.\"Card\" (deckid, cardname, sideboard, cardtype, count)VALUES %s;"
@@ -61,7 +70,45 @@ class card_queries():
         return self.connection.execute_query(query, params)
     
     #UPDATE
-    def update_count(self, results, cards, deck_id):
+    def update_card(self, deck_id, card_name, sideboard, type, count):
+        """
+        args:
+            deck_id (int) - deck id card belongs to
+            card_name (String) - name of card to update
+            sideboard (boolean) - True if card in sideboard
+            type (String) - card type (can be None)
+            count (int) - number of the card in deck
+        return 
+            (int) - number of affected rows 
+
+        replaces all values with the inputted values
+        """
+
+        if (count <= 0):
+            print(f'card count must be greater than zero For card: {card_name}')
+            return False
+
+        query = "UPDATE public.\"Card\" SET \"sideboard\" = %s, \"cardtype\" = %s, \"count\" = %s WHERE \"cardname\" = %s AND \"deckid\" = %s;"
+        params = (sideboard, type, count, card_name, deck_id)
+        return self.connection.execute_query(query, params, False)
+
+    #DELETE
+    def delete_cards_from_deck(self, cards, deck_id):
+        """
+        args:   
+            cards (String[]) - names of cards to delete
+            deck_id (int)
+        return:
+            (int) - number of affected rows 
+        """
+        query =  "DELETE FROM public.\"Card\" WHERE cardname IN %s AND deckid = %s;"
+        params = (tuple(cards), deck_id)
+
+        return self.connection.execute_query(query, params, False)
+
+
+    #Helper function
+    def _update_count(self, results, cards, deck_id):
         """
         args:
             results (List) - existing rows
@@ -79,22 +126,6 @@ class card_queries():
                 self.connection.execute_query(query, params, False)
                 cards.remove(card)
                 break
-            
-    #DELETE
-    def delete_cards_from_deck(self, cards, deck_id):
-        """
-        args:   
-            cards (String[]) - names of cards to delete
-            deck_id (int)
-        return:
-            (int) - number of affected rows 
-        """
-        query =  "DELETE FROM public.\"Card\" WHERE cardname IN %s AND deckid = %s;"
-        params = (tuple(cards), deck_id)
-
-        return self.connection.execute_query(query, params, False)
-
-
 
 
 
