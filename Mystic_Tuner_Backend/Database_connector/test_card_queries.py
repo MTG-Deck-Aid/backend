@@ -2,19 +2,31 @@ from database_queries import card_queries
 from database_connector import DatabaseConnector
 import pytest
 
-instance
 
 @pytest.fixture
 def setup_and_teardown():
-    global instance
-    instance = DatabaseConnector("localhost", "Test_Database", "MT_Admin", "admin", 5433)
+
 
     yield
 
 
 
+
 def test_create():
-    global instance
+    instance = card_queries()
+    cards = [
+        {'cardname': 'Card A', 'sideboard': False, 'cardtype': 'Creature', 'count': 3},
+        {'cardname': 'Card B', 'sideboard': True, 'cardtype': 'Sorcery', 'count': 2}
+        ]
+    instance.add_cards_to_deck(cards, 1)
+    assert len(instance.get_card('Card A')) != 0
+
+    assert len(instance.get_card('Card B')) != 0
+
+    cards_to_delete = ['Card A', 'Card B']
+
+    instance.delete_cards_from_deck(cards_to_delete, 1)
+
     
 
 def test_read():
