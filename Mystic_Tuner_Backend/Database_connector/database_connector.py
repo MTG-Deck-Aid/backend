@@ -1,7 +1,7 @@
 import psycopg2
 from psycopg2.extras import execute_values
 
-class DatabaseConnector():
+class database_connector():
     """
     Singleton connector class that excutes queries passed to it
     """
@@ -47,9 +47,9 @@ class DatabaseConnector():
         return:
             (DatabaseConnector) - singleton instance of the database connector
         """
-        if DatabaseConnector._instance == None:
-            DatabaseConnector._instance = DatabaseConnector()
-        return DatabaseConnector._instance
+        if database_connector._instance == None:
+            database_connector._instance = database_connector()
+        return database_connector._instance
 
     def execute_query(self, query, params = None, is_select = True):
         """

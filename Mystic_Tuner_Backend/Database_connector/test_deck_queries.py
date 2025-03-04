@@ -1,5 +1,5 @@
-from database_queries import deck_queries, card_queries
-from database_connector import DatabaseConnector
+from deck_queries import deck_queries
+from card_queries import card_queries
 import pytest
 
 @pytest.fixture

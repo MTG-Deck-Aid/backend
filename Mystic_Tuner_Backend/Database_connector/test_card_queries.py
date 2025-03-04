@@ -1,5 +1,4 @@
-from database_queries import card_queries
-from database_connector import DatabaseConnector
+from card_queries import card_queries
 import pytest
 
 
