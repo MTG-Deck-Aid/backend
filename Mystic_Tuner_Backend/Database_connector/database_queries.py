@@ -192,7 +192,7 @@ class deck_queries():
 
             Overwites existing deck's information with the new data
         """
-        query = "UPDATE public.\"Deck\" SET \"userId\" = %s, \"decktype\" = %s, \"deckName\" = %s WHERE DID = %s;"
+        query = "UPDATE public.\"Deck\" SET \"userId\" = %s, \"deckType\" = %s, \"deckName\" = %s WHERE \"DID\" = %s;"
         params = (user_id, deck_type, deck_name, deck_id)
         return self.connection.execute_query(query, params, False)
 
