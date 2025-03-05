@@ -1,4 +1,4 @@
-from database_connector import database_connector
+from Database_Connector.database_connector import database_connector
 
 class deck_queries():
     """
