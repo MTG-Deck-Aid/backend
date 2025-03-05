@@ -119,6 +119,42 @@ def test_create_zero_count(setup_and_teardown):
 
     assert rows_affected == False
 
+def test_add_card_update_count(setup_and_teardown):
+    query_generator = card_queries()
+
+
+    new_card = [{
+        'cardname': 'Card A', 'sideboard': True, 'cardtype': 'Creature', 'count': 3
+    }]
+
+    rows_affected = query_generator.add_cards_to_deck(new_card, setup_and_teardown)
+
+    assert rows_affected == 1
+
+    result = query_generator.get_card('Card A')
+
+    assert result[0][5] == 6    
+
+def test_add_new_and_existing(setup_and_teardown):
+    query_generator = card_queries()
+
+
+    new_card = [
+        {'cardname': 'Card A', 'sideboard': True, 'cardtype': 'Creature', 'count': 2},
+        {'cardname': 'Card E', 'sideboard': True, 'cardtype': 'Creature', 'count': 1}
+        ]
+    
+    query_generator.add_cards_to_deck(new_card, setup_and_teardown)
+
+    result = query_generator.get_card('Card A')
+
+    assert result[0][5] == 5
+
+    result = query_generator.get_card('Card E')
+
+    assert result[0][5] == 1
+
+
 #
 #READ TESTS
 #

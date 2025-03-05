@@ -24,7 +24,10 @@ class database_connector():
         return:
             nothing
         """
+        self._establish_connection()
 
+
+    def _establish_connection(self, host = "localhost", database_name = "Mystic_Tuner_Application", user = "MT_Admin", password = "admin", port = 5433):
         #TODO implement environment variables to get connection details
         try:
             self.connection = psycopg2.connect(
@@ -38,6 +41,8 @@ class database_connector():
 
         except Exception as e:
             print(f"Could not establish connection to database: {e}")
+            return False
+        return True
 
     @staticmethod
     def get_instance():
@@ -50,6 +55,10 @@ class database_connector():
         if database_connector._instance == None:
             database_connector._instance = database_connector()
         return database_connector._instance
+
+    def change_connection(self, host = "localhost", database_name = "Mystic_Tuner_Application", user = "MT_Admin", password = "admin", port = 5433):
+        self.connection.close()
+        return self._establish_connection()
 
     def execute_query(self, query, params = None, is_select = True):
         """

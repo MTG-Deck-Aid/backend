@@ -26,6 +26,9 @@ class card_queries():
 
         If an inputted card already exists within the deck, instead the count of that row is incremented by the
         value passed in by the list.
+
+        *Note, due to the complexity of how the function does the updating, the returned row_count doesn't
+        take into account exisiting rows that are updated
         """
 
         cards = cards.copy()
@@ -47,14 +50,20 @@ class card_queries():
             return results
 
         
-        self._update_count(results, cards, deck_id)
+        rows_affected = self._update_count(results, cards, deck_id)
 
         if(len(cards) != 0):
             query = "INSERT INTO public.\"Card\" (deckid, cardname, sideboard, cardtype, count)VALUES %s;"
 
             params = [(deck_id, card['cardname'], card['sideboard'], card['cardtype'], card['count']) for card in cards]
 
-            return self.connection.execute_long_query(query, params)
+            result = self.connection.execute_long_query(query, params)
+
+            if (result == False):
+                return result
+            else:
+                return result + rows_affected
+        return rows_affected
 
 
     #READ
@@ -117,6 +126,7 @@ class card_queries():
         return:
             Nothing
         """
+        updated_rows = 0
         for existing_row in results:
             for card in cards:
                 if(card['cardname'] != existing_row[2]):
@@ -125,7 +135,9 @@ class card_queries():
                 params = (int(card['count']), existing_row[2], deck_id)
                 self.connection.execute_query(query, params, False)
                 cards.remove(card)
+                updated_rows += 1
                 break
-
+        
+        return updated_rows
 
 
