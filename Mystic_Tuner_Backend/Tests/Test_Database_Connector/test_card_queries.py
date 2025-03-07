@@ -1,11 +1,11 @@
-from Database_Connector.card_queries import card_queries
+from Database_Connector.card_queries import CardQueries
 
 import pytest
 
 
 @pytest.fixture
 def setup_and_teardown():
-    query_generator = card_queries()
+    query_generator = CardQueries()
     cards = [
         {'cardname': 'Card A', 'sideboard': False, 'cardtype': 'Creature', 'count': 3},
         {'cardname': 'Card B', 'sideboard': True, 'cardtype': 'Sorcery', 'count': 2},
@@ -26,7 +26,7 @@ def setup_and_teardown():
 #
 
 def test_create_valid(setup_and_teardown):
-    query_generator = card_queries()
+    query_generator = CardQueries()
 
     new_card = [{
         'cardname': 'Card E', 'sideboard': False, 'cardtype': 'Creature', 'count': 1
@@ -48,7 +48,7 @@ def test_create_valid(setup_and_teardown):
     assert found_card == True
 
 def test_create_none_cardtype(setup_and_teardown):
-    query_generator = card_queries()
+    query_generator = CardQueries()
 
     new_card = [{
         'cardname': 'Card E', 'sideboard': False, 'cardtype': None, 'count': 1
@@ -64,7 +64,7 @@ def test_create_none_cardtype(setup_and_teardown):
     assert result[0][4] == None
 
 def test_create_invalid_name(setup_and_teardown):
-    query_generator = card_queries()
+    query_generator = CardQueries()
 
     new_card = [{
         'cardname': None, 'sideboard': False, 'cardtype': 'Creature', 'count': 1
@@ -75,7 +75,7 @@ def test_create_invalid_name(setup_and_teardown):
     assert rows_affected == False
 
 def test_create_invalid_sideboard(setup_and_teardown):
-    query_generator = card_queries()
+    query_generator = CardQueries()
 
     new_card = [{
         'cardname': 'Card E', 'sideboard': None, 'cardtype': 'Creature', 'count': 1
@@ -87,7 +87,7 @@ def test_create_invalid_sideboard(setup_and_teardown):
 
 
 def test_create_none_count(setup_and_teardown):
-    query_generator = card_queries()
+    query_generator = CardQueries()
 
     new_card = [{
         'cardname': 'Card E', 'sideboard': True, 'cardtype': 'Creature', 'count': None
@@ -98,7 +98,7 @@ def test_create_none_count(setup_and_teardown):
     assert rows_affected == False
 
 def test_create_negative_count(setup_and_teardown):
-    query_generator = card_queries()
+    query_generator = CardQueries()
 
     new_card = [{
         'cardname': 'Card E', 'sideboard': True, 'cardtype': 'Creature', 'count': -1
@@ -109,7 +109,7 @@ def test_create_negative_count(setup_and_teardown):
     assert rows_affected == False
 
 def test_create_zero_count(setup_and_teardown):
-    query_generator = card_queries()
+    query_generator = CardQueries()
 
     new_card = [{
         'cardname': 'Card E', 'sideboard': True, 'cardtype': 'Creature', 'count': 0
@@ -120,7 +120,7 @@ def test_create_zero_count(setup_and_teardown):
     assert rows_affected == False
 
 def test_add_card_update_count(setup_and_teardown):
-    query_generator = card_queries()
+    query_generator = CardQueries()
 
 
     new_card = [{
@@ -136,7 +136,7 @@ def test_add_card_update_count(setup_and_teardown):
     assert result[0][5] == 6    
 
 def test_add_new_and_existing(setup_and_teardown):
-    query_generator = card_queries()
+    query_generator = CardQueries()
 
 
     new_card = [
@@ -160,7 +160,7 @@ def test_add_new_and_existing(setup_and_teardown):
 #
 
 def test_read(setup_and_teardown):
-    query_generator = card_queries()
+    query_generator = CardQueries()
 
     target_card = 'Card A'
 
@@ -177,7 +177,7 @@ def test_read(setup_and_teardown):
     assert result[0][5] == 3
 
 def test_read_nonexistant_card(setup_and_teardown):
-    query_generator = card_queries()
+    query_generator = CardQueries()
 
     target_card = 'Card F'
 
@@ -190,7 +190,7 @@ def test_read_nonexistant_card(setup_and_teardown):
 #
 
 def test_update(setup_and_teardown):
-    query_generator = card_queries()
+    query_generator = CardQueries()
 
     rows_updated = query_generator.update_card(setup_and_teardown, 'Card A', True, 'Enchantment', 1)
 
@@ -209,42 +209,42 @@ def test_update(setup_and_teardown):
     assert result[0][5] == 1
 
 def test_update_nonexistant_card(setup_and_teardown):
-    query_generator = card_queries()
+    query_generator = CardQueries()
 
     result = query_generator.update_card(setup_and_teardown, 'Card F', True, 'Enchantment', 1)
 
     assert result == 0
 
 def test_update_invalid_name(setup_and_teardown):
-    query_generator = card_queries()
+    query_generator = CardQueries()
 
     result = query_generator.update_card(setup_and_teardown, None, True, 'Enchantment', 1)
 
     assert result == 0
 
 def test_update_invalid_sideboard(setup_and_teardown):
-    query_generator = card_queries()
+    query_generator = CardQueries()
 
     result = query_generator.update_card(setup_and_teardown, 'Card A', None, 'Enchantment', 1)
 
     assert result == False
 
 def test_update_none_type(setup_and_teardown):
-    query_generator = card_queries()
+    query_generator = CardQueries()
 
     result = query_generator.update_card(setup_and_teardown, 'Card A', False, None, 1)
 
     assert result == 1
 
 def test_update_negative_count(setup_and_teardown):
-    query_generator = card_queries()
+    query_generator = CardQueries()
 
     result = query_generator.update_card(setup_and_teardown, 'Card A', False, 'Enchantment', -1)
 
     assert result == False
 
 def test_update_zero_count(setup_and_teardown):
-    query_generator = card_queries()
+    query_generator = CardQueries()
 
     result = query_generator.update_card(setup_and_teardown, 'Card A', False, 'Enchantment', 0)
 
@@ -254,7 +254,7 @@ def test_update_zero_count(setup_and_teardown):
 #
 
 def test_delete(setup_and_teardown):
-    query_generator = card_queries()
+    query_generator = CardQueries()
 
     target_card = ['Card A']
 
@@ -265,7 +265,7 @@ def test_delete(setup_and_teardown):
     assert len(result) == 0
 
 def test_delete_nonexistant_card(setup_and_teardown):
-    query_generator = card_queries()
+    query_generator = CardQueries()
 
     target_card = ['Card F']
     
@@ -274,7 +274,7 @@ def test_delete_nonexistant_card(setup_and_teardown):
     assert rows_affected == 0
 
 def test_delete_card_wrong_deck(setup_and_teardown):
-    query_generator = card_queries()
+    query_generator = CardQueries()
 
     target_card = ['Card A']
     

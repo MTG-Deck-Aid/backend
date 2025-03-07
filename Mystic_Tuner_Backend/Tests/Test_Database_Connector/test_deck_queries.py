@@ -1,10 +1,10 @@
-from Database_Connector.deck_queries import deck_queries
-from Database_Connector.card_queries import card_queries
+from Database_Connector.deck_queries import DeckQueries
+from Database_Connector.card_queries import CardQueries
 import pytest
 
 @pytest.fixture
 def setup_and_teardown():
-    query_generator = deck_queries()
+    query_generator = DeckQueries()
     cards = [
         {'cardname': 'Card A', 'sideboard': False, 'cardtype': 'Creature', 'count': 3},
         {'cardname': 'Card B', 'sideboard': True, 'cardtype': 'Sorcery', 'count': 2},
@@ -39,7 +39,7 @@ def setup_and_teardown():
     if deck_id == None:
         raise Exception()
 
-    query_generator = card_queries()
+    query_generator = CardQueries()
     cards = [
         {'cardname': 'Card A', 'sideboard': False, 'cardtype': 'Creature', 'count': 3},
         {'cardname': 'Card B', 'sideboard': True, 'cardtype': 'Sorcery', 'count': 2},
@@ -55,7 +55,7 @@ def setup_and_teardown():
 
     query_generator.delete_cards_from_deck(cards, deck_id)
 
-    query_generator = deck_queries()
+    query_generator = DeckQueries()
 
     query_generator.delete_deck(10, "Deck1")
     query_generator.delete_deck(10, "Deck2")
@@ -71,7 +71,7 @@ def setup_and_teardown():
 #CREATE TESTS
 #
 def test_create_deck(setup_and_teardown):
-    query_generator = deck_queries()
+    query_generator = DeckQueries()
 
     deck_to_add = [10, "Standard", "Test_deck"]
 
@@ -89,7 +89,7 @@ def test_create_deck(setup_and_teardown):
     assert correct == True
 
 def test_create_deck_none_name(setup_and_teardown):
-    query_generator = deck_queries()
+    query_generator = DeckQueries()
 
     deck_to_add = [10, "Standard", None]
 
@@ -98,7 +98,7 @@ def test_create_deck_none_name(setup_and_teardown):
     assert result == False
 
 def test_create_deck_none_type(setup_and_teardown):
-    query_generator = deck_queries()
+    query_generator = DeckQueries()
 
     deck_to_add = [10, None, "Test_deck"]
 
@@ -107,7 +107,7 @@ def test_create_deck_none_type(setup_and_teardown):
     assert result == False
 
 def test_create_deck_none_user(setup_and_teardown):
-    query_generator = deck_queries()
+    query_generator = DeckQueries()
 
     deck_to_add = [None, "Standard", "Test_deck"]
 
@@ -116,7 +116,7 @@ def test_create_deck_none_user(setup_and_teardown):
     assert result == False
 
 def test_create_existing_deck(setup_and_teardown):
-    query_generator = deck_queries()
+    query_generator = DeckQueries()
 
     deck_to_add = [10, "Standard", "Deck1"]
 
@@ -128,7 +128,7 @@ def test_create_existing_deck(setup_and_teardown):
 #READ TESTS
 #
 def test_get_all_user_decks(setup_and_teardown):
-    query_generator = deck_queries()
+    query_generator = DeckQueries()
 
     decks = query_generator.get_user_decks(10)
 
@@ -146,19 +146,19 @@ def test_get_all_user_decks(setup_and_teardown):
         assert correct == True
 
 def test_get_all_user_decks_none_user(setup_and_teardown):
-    query_generator = deck_queries()
+    query_generator = DeckQueries()
     decks = query_generator.get_user_decks(100)
 
     assert len(decks) == 0
 
 def test_get_deck(setup_and_teardown):
-    query_generator = deck_queries()
+    query_generator = DeckQueries()
     deck = query_generator.get_deck(setup_and_teardown)
 
     assert len(deck) == 4
 
 def test_get_empty_deck(setup_and_teardown):
-    query_generator = deck_queries()
+    query_generator = DeckQueries()
     deck = query_generator.get_deck(setup_and_teardown + 1)
 
     assert len(deck) == 0
@@ -167,7 +167,7 @@ def test_get_empty_deck(setup_and_teardown):
 #
 
 def test_update_deck(setup_and_teardown):
-    query_generator = deck_queries()
+    query_generator = DeckQueries()
 
     query_generator.update_deck(11, "Pauper", "Test_deck", setup_and_teardown)
 
@@ -180,21 +180,21 @@ def test_update_deck(setup_and_teardown):
     assert decks[0][2] == "Test_deck"
 
 def test_update_deck_invalid_user(setup_and_teardown):
-    query_generator = deck_queries()
+    query_generator = DeckQueries()
     
     result = query_generator.update_deck(None, "Pauper", "Test_deck", setup_and_teardown)
 
     assert result == False
 
 def test_update_deck_invalid_type(setup_and_teardown):
-    query_generator = deck_queries()
+    query_generator = DeckQueries()
     
     result = query_generator.update_deck(11, None, "Test_deck", setup_and_teardown)
 
     assert result == False
 
 def test_update_deck_invalid_name(setup_and_teardown):
-    query_generator = deck_queries()
+    query_generator = DeckQueries()
     
     result = query_generator.update_deck(11, "Pauper", None, setup_and_teardown)
 
@@ -204,7 +204,7 @@ def test_update_deck_invalid_name(setup_and_teardown):
 #
 
 def test_delete_deck(setup_and_teardown):
-    query_generator = deck_queries()
+    query_generator = DeckQueries()
 
     rows_affected = query_generator.delete_deck(10, "Deck1")
 
@@ -223,14 +223,14 @@ def test_delete_deck(setup_and_teardown):
 
 
 def test_delete_nonexistant_deck(setup_and_teardown):
-    query_generator = deck_queries()
+    query_generator = DeckQueries()
 
     rows_affected = query_generator.delete_deck(10, "Nonexistant_Deck")
 
     assert rows_affected == 0
 
 def test_delete_deck_wrong_user(setup_and_teardown):
-    query_generator = deck_queries()
+    query_generator = DeckQueries()
 
     rows_affected = query_generator.delete_deck(11, "Deck1")
 

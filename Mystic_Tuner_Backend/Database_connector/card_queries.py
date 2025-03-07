@@ -1,11 +1,11 @@
-from Database_Connector.database_connector import database_connector
+from Database_Connector.database_connector import DatabaseConnector
 
-class card_queries():
+class CardQueries():
     """
     Class for creating queries related to the Card Table
     """
     def __init__(self):
-        self.connection = database_connector.get_instance()
+        self.connection = DatabaseConnector.get_instance()
 
     #CREATE
     def add_cards_to_deck(self, cards, deck_id):

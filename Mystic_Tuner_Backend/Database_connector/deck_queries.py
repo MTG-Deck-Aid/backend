@@ -1,11 +1,11 @@
-from Database_Connector.database_connector import database_connector
+from Database_Connector.database_connector import DatabaseConnector
 
-class deck_queries():
+class DeckQueries():
     """
     Class for creating queries related to the Deck Table
     """
     def __init__(self):
-        self.connection = database_connector.get_instance()
+        self.connection = DatabaseConnector.get_instance()
 
     #CREATE
     def add_deck(self, user_id, deck_type, deck_name):

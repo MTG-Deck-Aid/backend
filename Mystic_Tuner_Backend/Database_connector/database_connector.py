@@ -1,7 +1,7 @@
 import psycopg2
 from psycopg2.extras import execute_values
 
-class database_connector():
+class DatabaseConnector():
     """
     Singleton connector class that excutes queries passed to it
     """
@@ -52,9 +52,9 @@ class database_connector():
         return:
             (DatabaseConnector) - singleton instance of the database connector
         """
-        if database_connector._instance == None:
-            database_connector._instance = database_connector()
-        return database_connector._instance
+        if DatabaseConnector._instance == None:
+            DatabaseConnector._instance = DatabaseConnector()
+        return DatabaseConnector._instance
 
     def change_connection(self, host = "localhost", database_name = "Mystic_Tuner_Application", user = "MT_Admin", password = "admin", port = 5433):
         self.connection.close()
