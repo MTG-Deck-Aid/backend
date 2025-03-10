@@ -172,7 +172,7 @@ def test_update_deck(setup_and_teardown):
     query_generator.update_deck(11, "Pauper", "Test_deck", setup_and_teardown, None)
 
     decks = query_generator.get_user_decks(11)
-    print(decks)
+
     assert decks[0][0] == 11
 
     assert decks[0][1] == "Pauper"
