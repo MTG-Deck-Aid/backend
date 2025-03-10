@@ -8,22 +8,22 @@ class DeckQueries():
         self.connection = DatabaseConnector.get_instance()
 
     #CREATE
-    def add_deck(self, user_id, deck_type, deck_name):
+    def add_deck(self, user_id, deck_type, deck_name, commander):
         """
         args:
             user_id (int) - user id
             deck_type (String) - type of deck
             deck_name (String) - name for deck (must be unique for the given user)
+            commander (String) - name of commander
         return:
             (int) - number of affected rows
-            
         """
         for deck in self.get_user_decks(user_id):
             if(deck_name == deck[2]):
                 raise ValueError("DeckName already exists")
 
-        query = "INSERT INTO public.\"Deck\" (\"userId\", \"deckType\", \"deckName\") VALUES (%s, %s, %s);"
-        params = (user_id, deck_type, deck_name)
+        query = "INSERT INTO public.\"Deck\" (\"userId\", \"deckType\", \"deckName\", \"commander\") VALUES (%s, %s, %s, %s);"
+        params = (user_id, deck_type, deck_name, commander)
 
         return self.connection.execute_query(query, params, False)
 
@@ -51,20 +51,21 @@ class DeckQueries():
         return self.connection.execute_query(query, params)
     
     #UPDATE
-    def update_deck(self, user_id, deck_type, deck_name, deck_id):
+    def update_deck(self, user_id, deck_type, deck_name, deck_id, commander):
         """
         args:
             user_id (int) - user id
             deck_type (String) - type of deck (ex. Standard, Commander)
             deck_name (String) - name of deck 
             decK_id (int) - id of deck to update
+            commander (String) - name of commander
         return:
             (int) - number of affected rows
 
             Overwites existing deck's information with the new data
         """
-        query = "UPDATE public.\"Deck\" SET \"userId\" = %s, \"deckType\" = %s, \"deckName\" = %s WHERE \"DID\" = %s;"
-        params = (user_id, deck_type, deck_name, deck_id)
+        query = "UPDATE public.\"Deck\" SET \"userId\" = %s, \"deckType\" = %s, \"deckName\" = %s, \"commander\" = %s WHERE \"DID\" = %s;"
+        params = (user_id, deck_type, deck_name, commander, deck_id)
         return self.connection.execute_query(query, params, False)
 
     #DELETE
