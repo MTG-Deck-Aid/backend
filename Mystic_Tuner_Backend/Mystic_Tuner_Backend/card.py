@@ -7,12 +7,12 @@ class Card:
     """
 
     class Color(Enum):
-        WHITE = "white"
-        BLUE = "blue"
-        BLACK = "black"
-        RED = "red"
-        GREEN = "green"
-        COLORLESS = "colorless"
+        WHITE = "W"
+        BLUE = "U"
+        BLACK = "B"
+        RED = "R"
+        GREEN = "G"
+        COLORLESS = ""
 
     def __init__(self, name: str, colors: list[Color]):
         self.name: str = name

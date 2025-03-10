@@ -1,5 +1,6 @@
 from backend.Mystic_Tuner_Backend.Mystic_Tuner_Backend.card import Card
-
+from django.http import JsonResponse
+import requests
 
 class ScryFallEngine:
     """
@@ -8,6 +9,7 @@ class ScryFallEngine:
 
     def __init__(self):
         self
+        
 
     def search_card(self, card_name: str) -> Card:
         """
@@ -18,4 +20,23 @@ class ScryFallEngine:
         returns:
             dict - The card information as a dictionary.
         """
-        pass
+        if not card_name:
+            return None
+        scryfall_url = f"https://api.scryfall.com/cards/named?exact={card_name}"
+        headers = {
+            'User-Agent': 'MysticTunerApp',
+            'Accept': 'application/json'
+        }
+        response = requests.get(scryfall_url, headers=headers)
+        card_data = response.json()
+        if response.status_code != 200:
+            return None
+        return Card.from_json(card_data)
+    
+if __name__ == "__main__":
+    # Example Usage
+    engine = ScryFallEngine()
+    card = engine.search_card('Black Lotus')
+    print(card.__str__())
+    
+        
