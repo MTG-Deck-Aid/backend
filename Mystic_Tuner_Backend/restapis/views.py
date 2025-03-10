@@ -44,4 +44,32 @@ class VerifyCards(APIView):
         if(len(invalid_cards) > 0):
             return Response({'message': 'Unrecognized cards found', 'data': invalid_cards}, status=status.HTTP_206_PARTIAL_CONTENT)
 
-        return Response({'message': 'File received successfully'}, status=status.HTTP_200_OK)
+        return Response({'message': 'All cards identified'}, status=status.HTTP_200_OK)
+    
+class GetUserDecks(APIView):
+    def post(self, request):
+        return Response({"TODO"}, status = status.HTTP_418_IM_A_TEAPOT)
+
+class GetDeck(APIView):
+    def get(self, request, deck_id = None):
+
+        if(deck_id == None):
+            return Response({"TODO"}, status = status.HTTP_418_IM_A_TEAPOT)
+
+        return Response({"TODO"}, status = status.HTTP_418_IM_A_TEAPOT)
+    
+    def patch(self, request, deck_id = None):
+        return Response({"TODO"}, status = status.HTTP_418_IM_A_TEAPOT)
+
+
+class GetCommander(APIView):
+    def get(self, request):
+        return Response({"TODO"}, status = status.HTTP_418_IM_A_TEAPOT)
+
+class CreateNewDeck(APIView):
+    def get(self, request):
+        return Response({"TODO"}, status = status.HTTP_418_IM_A_TEAPOT)
+
+class GetSuggestions(APIView):
+    def get(self, request):
+        return Response({"TODO"}, status = status.HTTP_418_IM_A_TEAPOT)
