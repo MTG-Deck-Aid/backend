@@ -8,3 +8,5 @@ authlib;
 PyJWT;
 requests;
 django-cors-headers;
+pytest;
+psycopg2;
