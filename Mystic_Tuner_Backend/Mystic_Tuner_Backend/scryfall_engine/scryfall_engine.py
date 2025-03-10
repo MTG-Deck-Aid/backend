@@ -1,6 +1,7 @@
 from backend.Mystic_Tuner_Backend.Mystic_Tuner_Backend.card import Card
 from django.http import JsonResponse
 import requests
+import time
 
 class ScryFallEngine:
     """
@@ -20,9 +21,10 @@ class ScryFallEngine:
         returns:
             dict - The card information as a dictionary.
         """
+        time.sleep(0.05)
         if not card_name:
             return None
-        scryfall_url = f"https://api.scryfall.com/cards/named?exact={card_name}"
+        scryfall_url = f"https://api.scryfall.com/cards/named?fuzzy={card_name}"
         headers = {
             'User-Agent': 'MysticTunerApp',
             'Accept': 'application/json'
