@@ -1,1 +1,5 @@
-web: gunicorn Mystic_Tuner_Backend.wsgi:application --bind 0.0.0.0:8000
+web: gunicorn --config gunicorn.conf.py Mystic_Tuner_Backend.wsgi
+
+# For database Django migrations
+
+release: ./manage.py migrate --no-input
