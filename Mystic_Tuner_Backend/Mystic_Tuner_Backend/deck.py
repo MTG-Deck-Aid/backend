@@ -1,5 +1,5 @@
-from backend.Mystic_Tuner_Backend.Mystic_Tuner_Backend.card import Card
-import backend.Mystic_Tuner_Backend.Mystic_Tuner_Backend.game as game
+from Mystic_Tuner_Backend.card import Card
+import Mystic_Tuner_Backend.game as game
 import json
 
 

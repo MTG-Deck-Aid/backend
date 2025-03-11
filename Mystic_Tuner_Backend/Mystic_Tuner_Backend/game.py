@@ -2,8 +2,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from enum import Enum
 
-from backend.Mystic_Tuner_Backend.Mystic_Tuner_Backend.card import Card
-import backend.Mystic_Tuner_Backend.Mystic_Tuner_Backend.deck as deck
+from Mystic_Tuner_Backend.card import Card
+import Mystic_Tuner_Backend.deck as deck
 
 
 class Game(ABC):
