@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import ParseError
 import json
 
 from Mystic_Tuner_Backend.scryfall_engine.scryfall_engine import ScryFallEngine
@@ -20,28 +21,20 @@ class HelloWorld(APIView):
     
 class VerifyCards(APIView):
     def post(self, request):
-        file = request.FILES.get('file')
-
-        if not file:
-            return Response({'error': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
-
         try:
-            file_data = file.read().decode('utf-8')
-            cards = json.loads(file_data)['deckList']
-
-            print(cards)
-        except json.JSONDecodeError:
-            return Response({'error': 'Invalid JSON file'}, status=status.HTTP_400_BAD_REQUEST)
+            cards = unpack_file(request)
+        except ParseError as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         engine = ScryFallEngine()
         invalid_cards = []
         for card in cards:
             print(card)
             result = engine.search_card(card['name'])
-            if result == None:
+            if result is None:
                 invalid_cards.append(card['name'])
 
-        if(len(invalid_cards) > 0):
+        if len(invalid_cards) > 0:
             return Response({'message': 'Unrecognized cards found', 'data': invalid_cards}, status=status.HTTP_206_PARTIAL_CONTENT)
 
         return Response({'message': 'All cards identified'}, status=status.HTTP_200_OK)
@@ -64,7 +57,18 @@ class GetDeck(APIView):
 
 class GetCommander(APIView):
     def get(self, request):
-        return Response({"TODO"}, status = status.HTTP_418_IM_A_TEAPOT)
+        try:
+            commander = unpack_file(request)
+        except ParseError as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        engine = ScryFallEngine()
+
+        valid_commander = engine.search_card(commander['name'])
+
+        if(valid_commander == None):
+            return Response({'error': 'commander name not recognized'}, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+        return Response({'commander': valid_commander}, status=status.HTTP_200_OK)
 
 class CreateNewDeck(APIView):
     def get(self, request):
@@ -73,3 +77,17 @@ class CreateNewDeck(APIView):
 class GetSuggestions(APIView):
     def get(self, request):
         return Response({"TODO"}, status = status.HTTP_418_IM_A_TEAPOT)
+
+
+def unpack_file(request):
+    file = request.FILES.get('file')
+
+    if not file:
+        raise ParseError('No file uploaded')
+
+    try:
+        file_data = file.read().decode('utf-8')
+        json_data = json.loads(file_data)['deckList']
+        return json_data
+    except json.JSONDecodeError:
+        raise ParseError('Invalid JSON file')
