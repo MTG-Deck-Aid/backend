@@ -16,7 +16,7 @@ class AuthenticateLoginTokenAPIView(APIView):
     
 class HelloWorld(APIView):
     def get(self, request):
-        return Response ({"HELLO!!!"})
+        return Response ({"HELLO! from Django"})
     
 class VerifyCards(APIView):
     def post(self, request):
