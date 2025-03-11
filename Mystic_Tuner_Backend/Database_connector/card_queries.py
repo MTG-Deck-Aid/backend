@@ -27,10 +27,8 @@ class CardQueries():
         If an inputted card already exists within the deck, instead the count of that row is incremented by the
         value passed in by the list.
 
-        *Note, due to the complexity of how the function does the updating, the returned row_count doesn't
-        take into account exisiting rows that are updated
+        *Note, due to the complexity of how the function does the updating, the returned row_count may not be accurate
         """
-
         cards = cards.copy()
 
         for card in cards:
@@ -39,12 +37,7 @@ class CardQueries():
                 return False
 
 
-        query = "SELECT * FROM public.\"Card\" WHERE cardname IN %s;"
-
-        card_names = [card['cardname'] for card in cards]
-
-        params = (tuple(card_names), )
-        results = self.connection.execute_query(query, params)
+        results = self._get_cards(cards)
 
         if(results == False):
             return results
@@ -78,6 +71,8 @@ class CardQueries():
         params = (card_name,)
         return self.connection.execute_query(query, params)
     
+
+
     #UPDATE
     def update_card(self, deck_id, card_name, sideboard, type, count):
         """
@@ -102,6 +97,25 @@ class CardQueries():
         return self.connection.execute_query(query, params, False)
 
     #DELETE
+
+    def remove_cards_from_deck(self, cards, deck_id):
+        cards = cards.copy()
+
+        for card in cards:
+            if card['count'] is None or card['count'] > 0:
+                print(f'card count to remove must be less than 0: {card['cardname']}')
+                return False
+
+
+        results = self._get_cards(cards)
+
+        if(results == False):
+            return results
+        
+        rows_affected = self._update_count(results, cards, deck_id)
+
+        return rows_affected
+
     def delete_cards_from_deck(self, cards, deck_id):
         """
         args:   
@@ -111,12 +125,13 @@ class CardQueries():
             (int) - number of affected rows 
         """
         query =  "DELETE FROM public.\"Card\" WHERE cardname IN %s AND deckid = %s;"
+        print(cards)
         params = (tuple(cards), deck_id)
-
+        
         return self.connection.execute_query(query, params, False)
 
 
-    #Helper function
+    #Helper functions
     def _update_count(self, results, cards, deck_id):
         """
         args:
@@ -131,13 +146,28 @@ class CardQueries():
             for card in cards:
                 if(card['cardname'] != existing_row[2]):
                     continue
+                if(existing_row[5] + int(card['count']) <= 0):
+                    cards_to_delete = []
+                    cards_to_delete.append(card['cardname'])
+                    self.delete_cards_from_deck(cards_to_delete, deck_id)
+                    break
+
                 query = "UPDATE public.\"Card\" SET count = count + %s WHERE cardname = %s AND deckid = %s;"
                 params = (int(card['count']), existing_row[2], deck_id)
                 self.connection.execute_query(query, params, False)
                 cards.remove(card)
-                updated_rows += 1
                 break
+            updated_rows += 1
+
         
         return updated_rows
 
+    def _get_cards(self, cards):
 
+
+        query = "SELECT * FROM public.\"Card\" WHERE cardname IN %s;"
+
+        card_names = [card['cardname'] for card in cards]
+
+        params = (tuple(card_names), )
+        return self.connection.execute_query(query, params)
