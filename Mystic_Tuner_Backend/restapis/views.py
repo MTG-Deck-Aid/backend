@@ -51,7 +51,31 @@ class GetDeck(APIView):
         if(deck_id == None):
             return Response({"TODO"}, status = status.HTTP_418_IM_A_TEAPOT)
 
-        return Response({"TODO"}, status = status.HTTP_418_IM_A_TEAPOT)
+        deck_queries = DeckQueries()
+
+        results = deck_queries.get_deck(deck_id)
+
+
+        user_decks = deck_queries.get_user_decks(100) # TODO fix to use user id token return from auth0
+
+        if results == None or user_decks == None:
+            return Response({"Error" : "couldn't retrieve data"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        deck = None
+        for item in user_decks:
+            if item[3] == deck_id:
+                deck = item
+                break
+
+        response = []
+
+        for result in results:
+            if result[2] == deck[4]:
+                response.append({'commander' : result[2]})
+            response.append({'cardname':result[2], 'sideboard': result[3], 'cardtype': result[4], 'count': result[5]})
+
+
+        return Response({"deck" : response}, status = status.HTTP_200_OK)
     
     def patch(self, request, deck_id = None):
         return Response({"TODO"}, status = status.HTTP_418_IM_A_TEAPOT)
@@ -116,7 +140,7 @@ class CreateNewDeck(APIView):
 
         card_queries = CardQueries()
 
-        results = card_queries.add_cards_to_deck(formatted_list, deck[3])
+        result = card_queries.add_cards_to_deck(formatted_list, deck[3])
 
         if result == False:
             deck_queries.delete_deck(user_id, deck_name)
