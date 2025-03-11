@@ -1,4 +1,4 @@
-from backend.Mystic_Tuner_Backend.Mystic_Tuner_Backend.card import Card
+from Mystic_Tuner_Backend.card import Card
 from django.http import JsonResponse
 import requests
 import time

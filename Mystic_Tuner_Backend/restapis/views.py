@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 import json
 
-from backend.Mystic_Tuner_Backend.Mystic_Tuner_Backend.scryfall_engine.scryfall_engine import ScryFallEngine
+from Mystic_Tuner_Backend.scryfall_engine.scryfall_engine import ScryFallEngine
 
 # Create your views here.
 class AuthenticateLoginTokenAPIView(APIView):
