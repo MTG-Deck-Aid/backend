@@ -22,7 +22,7 @@ class HelloWorld(APIView):
 class VerifyCards(APIView):
     def post(self, request):
         try:
-            cards = unpack_file(request)
+            cards = unpack_file(request)['deckList']
         except ParseError as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -62,13 +62,15 @@ class GetCommander(APIView):
         except ParseError as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         engine = ScryFallEngine()
+        print(commander)
+        valid_commander = engine.search_card(commander['commander'])
 
-        valid_commander = engine.search_card(commander['name'])
+        # TODO call scryfall engine commander validation command
 
         if(valid_commander == None):
             return Response({'error': 'commander name not recognized'}, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-        return Response({'commander': valid_commander}, status=status.HTTP_200_OK)
+        return Response({'commander': valid_commander.name}, status=status.HTTP_200_OK)
 
 class CreateNewDeck(APIView):
     def get(self, request):
@@ -87,7 +89,7 @@ def unpack_file(request):
 
     try:
         file_data = file.read().decode('utf-8')
-        json_data = json.loads(file_data)['deckList']
+        json_data = json.loads(file_data)
         return json_data
     except json.JSONDecodeError:
         raise ParseError('Invalid JSON file')
