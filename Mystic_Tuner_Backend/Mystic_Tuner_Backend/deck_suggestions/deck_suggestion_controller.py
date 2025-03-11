@@ -1,8 +1,8 @@
-from backend.Mystic_Tuner_Backend.Mystic_Tuner_Backend.deck import Deck
-from backend.Mystic_Tuner_Backend.Mystic_Tuner_Backend.deck_suggestions.card_suggestor import (
+from Mystic_Tuner_Backend.deck import Deck
+from Mystic_Tuner_Backend.deck_suggestions.card_suggestor import (
     CardSuggestor,
 )
-from backend.Mystic_Tuner_Backend.Mystic_Tuner_Backend.scryfall_engine.scryfall_engine import (
+from Mystic_Tuner_Backend.scryfall_engine.scryfall_engine import (
     ScryFallEngine,
 )
 

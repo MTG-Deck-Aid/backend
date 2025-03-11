@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 import json
 import os
-from backend.Mystic_Tuner_Backend.Mystic_Tuner_Backend.deck import Deck
+from Mystic_Tuner_Backend.deck import Deck
 from google import genai
 from dotenv import load_dotenv
 
-from backend.Mystic_Tuner_Backend.Mystic_Tuner_Backend.game import Commander, Game
+from Mystic_Tuner_Backend.game import Commander, Game
 
 
 class CardSuggestor:

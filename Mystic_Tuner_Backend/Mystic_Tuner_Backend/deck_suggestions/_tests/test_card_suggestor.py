@@ -11,9 +11,9 @@ NOTE: To run the unit tests:
 import logging
 import unittest
 
-from backend.Mystic_Tuner_Backend.Mystic_Tuner_Backend.card import Card
-from backend.Mystic_Tuner_Backend.Mystic_Tuner_Backend.deck import Deck
-from backend.Mystic_Tuner_Backend.Mystic_Tuner_Backend.deck_suggestions import (
+from Mystic_Tuner_Backend.card import Card
+from Mystic_Tuner_Backend.deck import Deck
+from Mystic_Tuner_Backend.deck_suggestions import (
     CardSuggestor,
     DeckSuggestionController,
 )
