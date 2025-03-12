@@ -1,6 +1,8 @@
 from django.http import HttpResponse
 from django.urls import path
 from .views import *
+from .views import verify_cards
+from .views import AuthenticateLoginTokenAPIView, SuggestionsAPIView
 
 urlpatterns = [
     path('Authenticate/', AuthenticateLoginTokenAPIView.as_view(), name='Authenticate'),
@@ -9,11 +11,7 @@ urlpatterns = [
     path('decks/<int:deck_id>/', GetDeck.as_view()),
     path('commander/', GetCommander.as_view()),
     path('new-deck/', CreateNewDeck.as_view()),
-    path('suggestions/', GetSuggestions.as_view())
-from .views import verify_cards
-from .views import AuthenticateLoginTokenAPIView, SuggestionsAPIView
-
-urlpatterns = [
+    path('suggestions/', GetSuggestions.as_view()),
     path('Authenticate/', AuthenticateLoginTokenAPIView.as_view(), name='Authenticate'),
     path("health-check/", lambda request: HttpResponse("OK"), name="health-check"),
     path("", lambda request: HttpResponse("Mystic Tuner Backend API"), name="Mystic Tuner Backend"),
