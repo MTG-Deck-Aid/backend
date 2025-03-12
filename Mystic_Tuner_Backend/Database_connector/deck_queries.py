@@ -37,6 +37,7 @@ class DeckQueries():
         """
         query = "SELECT * FROM public.\"Deck\" WHERE \"userId\" = %s ORDER BY \"DID\" ASC;"
         params = (user_id,)
+
         return self.connection.execute_query(query, params)
     
     def get_deck(self, deck_id):
@@ -48,6 +49,7 @@ class DeckQueries():
         """
         query = "SELECT * FROM public.\"Card\" WHERE \"deckid\" = %s ORDER BY id ASC;"
         params = (deck_id,)
+
         return self.connection.execute_query(query, params)
     
     #UPDATE
@@ -66,6 +68,7 @@ class DeckQueries():
         """
         query = "UPDATE public.\"Deck\" SET \"userId\" = %s, \"deckType\" = %s, \"deckName\" = %s, \"commander\" = %s WHERE \"DID\" = %s;"
         params = (user_id, deck_type, deck_name, commander, deck_id)
+        
         return self.connection.execute_query(query, params, False)
 
     #DELETE
