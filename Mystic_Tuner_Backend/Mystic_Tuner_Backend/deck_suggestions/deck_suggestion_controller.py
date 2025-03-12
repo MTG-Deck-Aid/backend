@@ -7,11 +7,34 @@ from Mystic_Tuner_Backend.scryfall_engine.scryfall_engine import (
 )
 
 
-class DeckSuggestionController:
+class CardSuggestionController:
     """
     Controller to commuinicate with the frontend.
     Acts as a portion of the Mystic Tuner API.
     """
+    @staticmethod
+    def validate_request(request: dict) -> None:
+        """
+        Validate the request from the frontend.
+        Ensure that the request is a JSON string.
+
+        params:
+            request: dict - The request from the frontend.
+        returns:
+            None
+        """
+        if not isinstance(request, dict):
+            raise TypeError("Request must be a dictionary.")
+        if "decklist" not in request:
+            raise ValueError("Request must contain a decklist.")
+        if not isinstance(request["decklist"], str):
+            raise TypeError("Decklist must be a string")
+        
+        # Check for SQL Injection
+        SQL_INJECTION = ["DROP", "DELETE", "INSERT", "UPDATE", "SELECT"]
+        for injection in SQL_INJECTION:
+            if injection in request["decklist"].upper():
+                raise ValueError("SQL Injection Detected")
 
     @staticmethod
     def get_suggestions(json_str: str) -> list[dict]:
@@ -55,7 +78,7 @@ if __name__ == "__main__":
         REST API CALL FROM FRONTEND --> JSON STRING IN ROUTE /suggestion
         """
         # json_str = request.get_json()
-        suggestions = DeckSuggestionController.get_suggestions({})
+        #suggestions = CardSuggestionController:.get_suggestions({})
         return {
             "status": "success",
             "code": 200,
