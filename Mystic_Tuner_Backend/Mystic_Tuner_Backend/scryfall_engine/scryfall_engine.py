@@ -2,6 +2,7 @@ from Mystic_Tuner_Backend.card import Card
 from django.http import JsonResponse
 import requests
 import time
+import json
 
 class ScryFallEngine:
     """
@@ -34,6 +35,7 @@ class ScryFallEngine:
         if response.status_code != 200:
             return None
         return Card.from_json(card_data)
+    
     
 if __name__ == "__main__":
     # Example Usage
