@@ -37,7 +37,7 @@ class CardQueries():
                 return False
 
 
-        results = self._get_cards(cards)
+        results = self._get_cards(cards, deck_id)
 
         if(results == False):
             return results
@@ -107,7 +107,7 @@ class CardQueries():
                 return False
 
 
-        results = self._get_cards(cards)
+        results = self._get_cards(cards, deck_id)
 
         if(results == False):
             return results
@@ -162,12 +162,12 @@ class CardQueries():
         
         return updated_rows
 
-    def _get_cards(self, cards):
+    def _get_cards(self, cards, deck_id):
 
 
-        query = "SELECT * FROM public.\"Card\" WHERE cardname IN %s;"
+        query = "SELECT * FROM public.\"Card\" WHERE cardname IN %s AND deckid = %s;"
 
         card_names = [card['cardname'] for card in cards]
 
-        params = (tuple(card_names), )
+        params = (tuple(card_names), deck_id)
         return self.connection.execute_query(query, params)
