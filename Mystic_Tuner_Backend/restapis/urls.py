@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import AuthenticateLoginTokenAPIView
+from .views import verify_cards
 
 urlpatterns = [
-    path('Authenticate/', AuthenticateLoginTokenAPIView.as_view(), name='Authenticate'),
+    path('decks/verify-cards', verify_cards, name="verify_cards"),
 ]
