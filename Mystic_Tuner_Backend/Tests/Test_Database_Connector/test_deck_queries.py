@@ -147,7 +147,7 @@ def test_get_all_user_decks(setup_and_teardown):
 
 def test_get_all_user_decks_none_user(setup_and_teardown):
     query_generator = DeckQueries()
-    decks = query_generator.get_user_decks(100)
+    decks = query_generator.get_user_decks(-1)
 
     assert len(decks) == 0
 

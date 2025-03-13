@@ -5,8 +5,7 @@ class DatabaseConnector():
     """
     Singleton connector class that excutes queries passed to it
     """
-
-    _instance = None
+    _instance = None #instance variable to ensure singleton restriction
 
     def __new__(cls, *args, **kwargs):
         if (cls._instance is None):
@@ -26,8 +25,17 @@ class DatabaseConnector():
         """
         self._establish_connection()
 
-
     def _establish_connection(self, host = "localhost", database_name = "Mystic_Tuner_Application", user = "MT_Admin", password = "admin", port = 5433):
+        """
+        args:
+            host (String) - host IP 
+            database_name (String) - name of database
+            user (String) - database user username
+            password (String) - database user password
+            port (int) - port of the database
+        return:
+            success of connection (boolean)
+        """
         #TODO implement environment variables to get connection details
         try:
             self.connection = psycopg2.connect(
@@ -57,6 +65,16 @@ class DatabaseConnector():
         return DatabaseConnector._instance
 
     def change_connection(self, host = "localhost", database_name = "Mystic_Tuner_Application", user = "MT_Admin", password = "admin", port = 5433):
+        """
+        args:
+            host (String) - host IP 
+            database_name (String) - name of database
+            user (String) - database user username
+            password (String) - database user password
+            port (int) - port of the database
+        return:
+            success of connection (boolean)
+        """
         self.connection.close()
         return self._establish_connection()
 
@@ -109,9 +127,7 @@ class DatabaseConnector():
         """
         try:
             cursor = self.connection.cursor()
-
             execute_values(cursor, query, params)
-
             self.connection.commit()
 
             row_count = cursor.rowcount
