@@ -35,10 +35,7 @@ class AuthenticateLoginTokenAPIView(APIView):
     def get(self, request):
         return Response({"message": "This is a verified user!"})
     
-class HelloWorld(APIView):
-    def get(self, request):
-        return Response ({"HELLO! from Django"})
-    
+
 class VerifyCards(APIView):
     def post(self, request):
         try:
@@ -166,11 +163,6 @@ class CreateNewDeck(APIView):
 
 
         return Response({"message": "Successfully built deck", 'deckId' : deck[3]}, status = status.HTTP_200_OK)
-
-class GetSuggestions(APIView):
-    def get(self, request):
-        return Response({"TODO"}, status = status.HTTP_418_IM_A_TEAPOT)
-
 
 def unpack_file(request):
     file = request.FILES.get('file')
