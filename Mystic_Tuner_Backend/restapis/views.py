@@ -9,7 +9,8 @@ from Database_Connector.deck_queries import DeckQueries
 import json
 
 from Mystic_Tuner_Backend.scryfall_engine.scryfall_engine import ScryFallEngine
-from .scryfall_utils import batch_validate
+from .scryfall_utils import batch_validate, validate_commander
+from Mystic_Tuner_Backend.card import Card
 import json
 
 from Mystic_Tuner_Backend.deck_suggestions.deck_suggestion_controller import CardSuggestionController
@@ -116,16 +117,13 @@ class GetCommander(APIView):
             commander = unpack_file(request)
         except ParseError as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        engine = ScryFallEngine()
         print(commander)
-        valid_commander = engine.search_card(commander['commander'])
-
-        # TODO call scryfall engine commander validation command
+        valid_commander = validate_commander(commander)
 
         if(valid_commander == None):
             return Response({'error': 'commander name not recognized'}, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
-
-        return Response({'commander': valid_commander.name}, status=status.HTTP_200_OK)
+        engine = ScryFallEngine
+        return Response({'commander': valid_commander.name, 'images': engine.get_image_links(valid_commander.name)}, status=status.HTTP_200_OK)
 
 class CreateNewDeck(APIView):
     def post(self, request):
