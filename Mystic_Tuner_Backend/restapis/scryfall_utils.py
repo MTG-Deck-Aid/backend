@@ -33,10 +33,11 @@ def validate_commander(card_name: str) -> Card:
     response = requests.get(scryfall_url, headers=headers)
     card_data = response.json()
     if response.status_code != 200:
+        print("lol")
         return None
     if card_data['legalities']['commander'] != 'legal':
         return None
-    if ("Legendary Creature" not in card_data['type_line']) and ("can be your commander" not in card_data['oracle_text']):
+    if ("Legendary Creature" not in card_data['type_line']) and ("can be your commander" not in card_data['oracle_text']) and ("Legendary Planeswalker" not in card_data['type_line']):
         return None
     else:
         return Card.from_json(card_data)

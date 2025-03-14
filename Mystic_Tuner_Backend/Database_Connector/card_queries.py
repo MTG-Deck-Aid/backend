@@ -32,7 +32,7 @@ class CardQueries():
         cards = cards.copy()
         for card in cards:
             if card['count'] is None or card['count'] <= 0:
-                print(f'card count must be greater than zero For card: {card['cardname']}')
+                print(f"card count must be greater than zero For card: {card['cardname']}")
                 return False
 
         results = self._get_cards(cards, deck_id)
@@ -112,7 +112,7 @@ class CardQueries():
         cards = cards.copy()
         for card in cards:
             if card['count'] is None or card['count'] > 0:
-                print(f'card count to remove must be less than 0: {card['cardname']}')
+                print(f"card count to remove must be less than 0: {card['cardname']}")
                 return False
 
         results = self._get_cards(cards, deck_id)
