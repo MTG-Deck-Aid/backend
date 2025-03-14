@@ -44,25 +44,51 @@ class CardSuggestionController:
 
         params:
             json_str: str - The JSON string containing the decklist.
-        returns:
-            list[dict] - A list of suggested cards. Where each dictionary contains:
+            {
+                num_to_add: int - The number of cards to add to the decklist.
+                num_to_remove: int - The number of cards to remove from the decklist.
+                decklist: dict - The decklist to suggest cards for.
                 {
-                    "card_to_replace": Card - The card to replace in the decklist.
-                    "card_to_add": Card - The card to replace the card with.
-                    "reason": str - The reason for the suggestion.
+                    commander: str - The commander of the deck.
+                    mainboard: list[dict] - The mainboard of the deck.
+                    [
+                        {
+                            name: str - The name of the card.
+                            quantity: int - The quantity of the card in the deck.
+                        }
+                    ]
                 }
-        """
+            }
+        returns:
+            dict - A list of suggested cards to add and a list of cards to remove stored in a dict. 
+            {
+                cards_to_add: list[Card] - A list of cards to add to the deck.
+                cards_to_remove: list[Card] - A list of cards to remove from the deck.
+            }
 
+        """
         # Get suggestions
-        decklist = Deck.from_json(json_str)
-        suggestions = CardSuggestor().suggest_cards(decklist)
+        decklist = Deck.from_json(json_str["decklist"])
+        suggestions: dict = {
+            "cards_to_add": [],
+            "cards_to_remove": [],
+        }
+
+        # Only get suggestions for the requested number of cards, return the first n suggestions
+        if json_str["num_to_add"] > 0:
+            suggestions["cards_to_add"] = CardSuggestor(CardSuggestor.OperationStrategy.ADD).suggest_cards(decklist)[:json_str["num_to_add"]]
+
+        if json_str["num_to_remove"] > 0:
+            suggestions["cards_to_remove"] = CardSuggestor(CardSuggestor.OperationStrategy.REMOVE).suggest_cards(decklist)[:json_str["num_to_remove"]]
+
         # Find cards needed, replace cards in suggestions with card objects
         scryfall = ScryFallEngine()
-        for suggestion in suggestions:
-            suggestion["card_to_replace"] = scryfall.search_card(
-                suggestion["card_to_replace"]
-            )
-            suggestion["card_to_add"] = scryfall.search_card(suggestion["card_to_add"])
+        for suggestion in suggestions["cards_to_add"]:
+            suggestion["card"] = scryfall.search_card(suggestion["card"], include_image=True) 
+        
+        for suggestion in suggestions["cards_to_remove"]:
+            suggestion["card"] = scryfall.search_card(suggestion["card"], include_image=True)
+
         return suggestions
 
 

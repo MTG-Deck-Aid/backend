@@ -63,11 +63,28 @@ def suggestions(request):
     try:
         CardSuggestionController.validate_request(request.data)
         print("Request validated.")
-        suggestions = CardSuggestionController.get_suggestions(request.data)
+        suggestions: dict[list] = CardSuggestionController.get_suggestions(request.data)
         print(f"Suggestions generated. \n{suggestions}")
 
-        # Return only 
-        return Response(suggestions, status = 200)
+        # Return only required data from the Card objects ()
+        cards_to_add = []
+        for card_info in suggestions["cards_to_add"]:
+            card: Card = card_info["card"]  
+            cards_to_add.append({
+                "name": card.name,
+                "reason": card_info["reason"],
+                "imageURL": card.image_url
+            })
+
+        cards_to_remove = []
+        for card_info in suggestions["cards_to_remove"]:
+            card: Card = card_info["card"]
+            cards_to_remove.append({
+                "name": card.name,
+                "reason": card_info["reason"],
+                "imageURL": card.image_url
+            })
+        return Response({"cardsToAdd": cards_to_add, "cardsToRemove": cards_to_remove}, status = 200)
     except Exception as e:
         return Response({"error getting suggestions from gemini": str(e)}, status = 400)
 

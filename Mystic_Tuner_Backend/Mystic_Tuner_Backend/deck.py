@@ -55,11 +55,11 @@ class Deck:
         return deck
 
     def _parse_json_deck(self, deck: dict):
-        self.name = deck.get("deckName", "Unnamed Deck")
+        self.name = deck.get("deckName", "Unnamed Deck") # Currently, only commander is supported
         self.game = mtg_games.GameFactory.create_game(deck)
         self.card_list = []
         engine = ScryFallEngine()
-        for deck_card in deck["decklist"]["mainboard"]:
+        for deck_card in deck["mainboard"]:
             quantity = deck_card["quantity"]
             for _ in range(quantity):
                 card = deck_card.copy()

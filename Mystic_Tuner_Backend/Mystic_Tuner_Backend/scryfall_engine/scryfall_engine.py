@@ -13,7 +13,7 @@ class ScryFallEngine:
         self
         
 
-    def search_card(self, card_name: str) -> Card:
+    def search_card(self, card_name: str, include_image = False) -> Card:
         """
         Search for a card by name.
 
@@ -34,7 +34,12 @@ class ScryFallEngine:
         card_data = response.json()
         if response.status_code != 200:
             return None
-        return Card.from_json(card_data)
+        card: Card = Card.from_json(card_data)
+
+        if include_image:
+            card.image_url = self.get_image_links(card_name)
+
+        return card
 
     def get_image_links(self, card_name: str) -> dict:
         """

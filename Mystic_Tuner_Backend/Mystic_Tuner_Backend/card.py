@@ -17,6 +17,7 @@ class Card:
     def __init__(self, name: str, colors: list[Color]):
         self.name: str = name
         self.colors: list[Card.Color] = colors
+        self.image_url: str = None
 
 
     def __str__(self):

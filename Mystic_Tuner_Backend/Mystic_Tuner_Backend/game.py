@@ -48,7 +48,7 @@ class GameFactory:
             return Standard()
         elif game_type == Game.Type.COMMANDER.value:
             # Get the commander card
-            commander_name: str = deck["decklist"]["commander"]
+            commander_name: str = deck["commander"]
             return Commander(ScryFallEngine().validate_commander(commander_name))
         else:
             raise ValueError("Invalid game type provided.")
