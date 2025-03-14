@@ -13,8 +13,7 @@ from Mystic_Tuner_Backend.card import Card
 import json
 
 from Mystic_Tuner_Backend.deck_suggestions.deck_suggestion_controller import CardSuggestionController
-
-# Create your views here.
+from Mystic_Tuner_Backend.security.security_controller import SecurityController
 
 @api_view(["POST"])
 def verify_cards(request):
@@ -58,6 +57,7 @@ def suggestions(request):
         "cards_to_remove":[
         <SAME>
         ],
+        "issues":["Not enough cards to remove. Please add more cards to the deck."]
     }
     """
     try:
@@ -84,7 +84,7 @@ def suggestions(request):
                 "reason": card_info["reason"],
                 "imageURL": card.image_url
             })
-        return Response({"cardsToAdd": cards_to_add, "cardsToRemove": cards_to_remove}, status = 200)
+        return Response({"cardsToAdd": cards_to_add, "cardsToRemove": cards_to_remove, "issues": suggestions["issues"]}, status = 200)
     except Exception as e:
         return Response({"error getting suggestions from gemini": str(e)}, status = 400)
 
@@ -193,6 +193,13 @@ def create_new_deck(request):
 
     return Response({"message": "Successfully built deck", 'deckId' : deck[3]}, status = status.HTTP_200_OK)
 
+@api_view(["GET"])
+def get_user_id(request):
+    access_token = request.headers.get("Authorization")
+    print(f"access token: {access_token}")
+    return Response({"userId": SecurityController().get_user_id(access_token)}, status = status.HTTP_200_OK)
+
+
 def _unpack_file(request):
     print(request)
     file = request.FILES.get('file')
@@ -206,5 +213,6 @@ def _unpack_file(request):
         return json_data
     except json.JSONDecodeError:
         raise ParseError('Invalid JSON file')
+
 
 

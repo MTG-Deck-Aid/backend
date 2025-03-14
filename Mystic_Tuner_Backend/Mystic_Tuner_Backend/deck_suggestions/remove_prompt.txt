@@ -34,6 +34,8 @@ Each dictionary MUST contain the keys: "card" and "reason".
 
 The values for "card" MUST be the exact card names.
 
+The values for "card" MUST be from the deck provided
+
 The "reason" should be concise and under 20 words.
 
 No extra text. Just the Python list.
@@ -43,6 +45,7 @@ You should only suggest each card a maximum of one time.
 The gameType is used to state format-specific regulations. Ensure game format regulations are followed.
 
 You should suggest 5 to 10 cards.
+
 
 Now, provide suggestions for the following list of cards (replace this entire line and the brackets below it with your card list):
 
