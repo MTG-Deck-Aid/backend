@@ -162,7 +162,6 @@ class GeminiDeckListTuner(DeckListTuner):
         # Remove the extra characters from the response
         response_text = response_text.replace("```python", "")
         response_text = response_text.replace("```", "")
-        print(response_text)
         return json.loads(response_text)
 
     def generate(self, prompt: str, deck: Deck) -> list[dict]:

@@ -57,14 +57,16 @@ class Deck:
     def _parse_json_deck(self, deck: dict):
         self.name = deck.get("deckName", "Unnamed Deck") # Currently, only commander is supported
         self.game = mtg_games.GameFactory.create_game(deck)
-        self.card_list = []
+        self.card_list:list[Card] = []
         engine = ScryFallEngine()
+
+        # Add multiple quanity of cards to the card list
         for deck_card in deck["mainboard"]:
             quantity = deck_card["quantity"]
             for _ in range(quantity):
                 card = deck_card.copy()
                 card.pop("quantity")
-                self.card_list.append(engine.search_card(card["name"]))
+                self.card_list.append(engine.search_card(card["name"], include_image=True))
 
     def _load_deck_from_file(self, file_path: str):
         try:

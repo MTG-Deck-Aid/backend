@@ -5,6 +5,7 @@ from Mystic_Tuner_Backend.deck_suggestions.card_suggestor import (
 from Mystic_Tuner_Backend.scryfall_engine.scryfall_engine import (
     ScryFallEngine,
 )
+from Mystic_Tuner_Backend.card import Card
 
 
 class CardSuggestionController:
@@ -62,33 +63,59 @@ class CardSuggestionController:
         returns:
             dict - A list of suggested cards to add and a list of cards to remove stored in a dict. 
             {
-                cards_to_add: list[Card] - A list of cards to add to the deck.
-                cards_to_remove: list[Card] - A list of cards to remove from the deck.
+                cards_to_add: [{"card": Card, "reason": str}],
+                cards_to_remove: [{"card": Card, "reason": str}],
+                "issues": [] - A list of issues that occured when generating suggestions.
             }
 
         """
         # Get suggestions
-        decklist = Deck.from_json(json_str["decklist"])
+        decklist: Deck = Deck.from_json(json_str["decklist"])
         suggestions: dict = {
             "cards_to_add": [],
             "cards_to_remove": [],
+            "issues": []
         }
 
-        # Only get suggestions for the requested number of cards, return the first n suggestions
+        scryfall = ScryFallEngine()
+
         if json_str["num_to_add"] > 0:
-            suggestions["cards_to_add"] = CardSuggestor(CardSuggestor.OperationStrategy.ADD).suggest_cards(decklist)[:json_str["num_to_add"]]
+            # Only get suggestions for the requested number of cards, return the first n suggestions
+            add_suggestions: list[dict] = CardSuggestor(CardSuggestor.OperationStrategy.ADD).suggest_cards(decklist)[:json_str["num_to_add"]]
+            for suggestion in add_suggestions:
+                new_card: Card = scryfall.search_card(suggestion["card"], include_image=True) 
+                suggestions["cards_to_add"].append({"card": new_card, "reason": suggestion["reason"]})
 
         if json_str["num_to_remove"] > 0:
-            suggestions["cards_to_remove"] = CardSuggestor(CardSuggestor.OperationStrategy.REMOVE).suggest_cards(decklist)[:json_str["num_to_remove"]]
-
-        # Find cards needed, replace cards in suggestions with card objects
-        scryfall = ScryFallEngine()
-        for suggestion in suggestions["cards_to_add"]:
-            suggestion["card"] = scryfall.search_card(suggestion["card"], include_image=True) 
-        
-        for suggestion in suggestions["cards_to_remove"]:
-            suggestion["card"] = scryfall.search_card(suggestion["card"], include_image=True)
-
+            remove_suggestions: list[dict] = CardSuggestor(CardSuggestor.OperationStrategy.REMOVE).suggest_cards(decklist)
+            # Ensure that the card is in the decklist before suggesting to remove it
+            i = 0
+            while len(suggestions["cards_to_remove"]) < json_str["num_to_remove"] and i < len(remove_suggestions):
+                card_info = remove_suggestions[i]
+                in_add_suggestions = False
+                for card_dict in suggestions["cards_to_add"]:
+                    card: Card = card_dict["card"]
+                    if card.name == card_info["card"]:
+                        in_add_suggestions = True
+                        break
+                already_suggested = False
+                for card_dict in suggestions["cards_to_remove"]:
+                    card: Card = card_dict["card"]
+                    if card.name == card_info["card"]:
+                        already_suggested = True
+                        break
+                
+                if not in_add_suggestions and not already_suggested:
+                    for i in range(len(decklist.card_list)):
+                        card: Card = decklist.card_list[i]
+                        if card.name == card_info["card"]:
+                            suggestions["cards_to_remove"].append({"card": card, "reason": card_info["reason"]})
+                            break
+                i += 1
+            
+            not_enough_removed = len(suggestions["cards_to_remove"]) < json_str["num_to_remove"]
+            if not_enough_removed:
+                suggestions["issues"].append("Not enough cards to remove. Please add more cards to the deck.")
         return suggestions
 
 
