@@ -65,6 +65,8 @@ def suggestions(request):
         print("Request validated.")
         suggestions = CardSuggestionController.get_suggestions(request.data)
         print(f"Suggestions generated. \n{suggestions}")
+
+        # Return only 
         return Response(suggestions, status = 200)
     except Exception as e:
         return Response({"error getting suggestions from gemini": str(e)}, status = 400)

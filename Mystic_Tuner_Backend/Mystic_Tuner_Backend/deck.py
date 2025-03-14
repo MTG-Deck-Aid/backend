@@ -1,5 +1,5 @@
 from Mystic_Tuner_Backend.card import Card
-import Mystic_Tuner_Backend.game as game
+import Mystic_Tuner_Backend.game as mtg_games
 import json
 
 from Mystic_Tuner_Backend.scryfall_engine.scryfall_engine import ScryFallEngine
@@ -14,14 +14,14 @@ class Deck:
         self,
         name: str,
         card_list: list[Card] = None,
-        game_type: game.Game = None,
+        game: mtg_games.Game = None,
     ):
         """
         Different ways to create a Deck object.
         For alternative constructors see "from_..." methods.
         """
         self.name: str = name
-        self.game: game.Game = game_type
+        self.game: mtg_games.Game = game
         self.card_list: list[Card] = card_list
 
     def __str__(self):
@@ -39,9 +39,10 @@ class Deck:
         try:
             deck = cls.__new__(cls)
             deck._parse_json_deck(json_deck)
+            return deck
         except Exception as e:
             print("An error occured when parsing the deck JSON: ", e)
-        return deck
+        
 
     @classmethod
     def from_file(cls, file_path: str):
@@ -55,10 +56,10 @@ class Deck:
 
     def _parse_json_deck(self, deck: dict):
         self.name = deck.get("deckName", "Unnamed Deck")
-        self.game = game.GameFactory.create_game(deck)
+        self.game = mtg_games.GameFactory.create_game(deck)
         self.card_list = []
         engine = ScryFallEngine()
-        for deck_card in deck["mainboard"]:
+        for deck_card in deck["decklist"]["mainboard"]:
             quantity = deck_card["quantity"]
             for _ in range(quantity):
                 card = deck_card.copy()
@@ -72,3 +73,5 @@ class Deck:
         except Exception as e:
             print("An error occured when reading the decklist file: ", e)
             raise e
+
+
