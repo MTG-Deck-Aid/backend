@@ -36,12 +36,7 @@ class CardSuggestor:
         params:
             decklist: Deck - The decklist to suggest cards for.
         returns:
-            list[dict] - A list of suggested cards. Where each dictionary contains:
-                {
-                    "card_to_replace": str - The card to replace in the decklist.
-                    "card_to_add": str - The card to replace the card with.
-                    "reason": str - The reason for the suggestion.
-                }
+            list[dict] - two lists of cards, one set to replace and one set to add. Only contains the names, and reasons.
         """
         return self.model_strategy.generate(self.prompt, decklist)
 

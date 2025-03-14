@@ -27,14 +27,13 @@ class CardSuggestionController:
             raise TypeError("Request must be a dictionary.")
         if "decklist" not in request:
             raise ValueError("Request must contain a decklist.")
-        if not isinstance(request["decklist"], str):
-            raise TypeError("Decklist must be a string")
-        
-        # Check for SQL Injection
-        SQL_INJECTION = ["DROP", "DELETE", "INSERT", "UPDATE", "SELECT"]
-        for injection in SQL_INJECTION:
-            if injection in request["decklist"].upper():
-                raise ValueError("SQL Injection Detected")
+        if not isinstance(request["decklist"], dict):
+            raise TypeError("Decklist must be a dictionary containing the commander and mainboard.")
+        if  "commander" not in request["decklist"]:
+            raise ValueError("Decklist must contain a commander.")
+        if "mainboard" not in request["decklist"]:
+            raise ValueError("Decklist must contain a mainboard.")
+       
 
     @staticmethod
     def get_suggestions(json_str: str) -> list[dict]:
@@ -56,10 +55,7 @@ class CardSuggestionController:
 
         # Get suggestions
         decklist = Deck.from_json(json_str)
-        card_suggestor = CardSuggestor()
-        suggestions = card_suggestor.suggest_cards(decklist)
-        print(suggestions)
-        print(type(suggestions))
+        suggestions = CardSuggestor().suggest_cards(decklist)
         # Find cards needed, replace cards in suggestions with card objects
         scryfall = ScryFallEngine()
         for suggestion in suggestions:
