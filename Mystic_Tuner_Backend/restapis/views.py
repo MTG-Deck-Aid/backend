@@ -200,6 +200,17 @@ def get_user_id(request):
     return Response({"userId": SecurityController().get_user_id(access_token)}, status = status.HTTP_200_OK)
 
 
+@api_view(["GET"])
+def autocomplete_search(request):
+    try:
+        query = request.GET.get("q", "")
+        print(f"query: {query}")
+        cards: list[str] = ScryFallEngine().autocomplete(query)
+        return Response(cards, status = 200)
+    except Exception as e:
+        return Response({"error getting autocomplete suggestions": str(e)}, status = 400)
+
+
 def _unpack_file(request):
     print(request)
     file = request.FILES.get('file')
