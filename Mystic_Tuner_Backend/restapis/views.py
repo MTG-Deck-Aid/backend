@@ -112,17 +112,15 @@ class GetDeck(APIView):
 
 
 class GetCommander(APIView):
-    def get(self, request):
+    def post(self, request):
         try:
-            commander = unpack_file(request)
+            commander = unpack_file(request)["commander"]
         except ParseError as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        print(commander)
         valid_commander = validate_commander(commander)
-
         if(valid_commander == None):
             return Response({'error': 'commander name not recognized'}, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
-        engine = ScryFallEngine
+        engine = ScryFallEngine()
         return Response({'commander': valid_commander.name, 'images': engine.get_image_links(valid_commander.name)}, status=status.HTTP_200_OK)
 
 class CreateNewDeck(APIView):
