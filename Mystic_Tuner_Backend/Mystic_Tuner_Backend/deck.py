@@ -2,6 +2,8 @@ from Mystic_Tuner_Backend.card import Card
 import Mystic_Tuner_Backend.game as game
 import json
 
+from Mystic_Tuner_Backend.scryfall_engine.scryfall_engine import ScryFallEngine
+
 
 class Deck:
     """
@@ -34,8 +36,11 @@ class Deck:
         Alternative constructor for creating a Deck object from a JSON object.
         Main Use - API
         """
-        deck = cls.__new__(cls)
-        deck._parse_json_deck(json_deck)
+        try:
+            deck = cls.__new__(cls)
+            deck._parse_json_deck(json_deck)
+        except Exception as e:
+            print("An error occured when parsing the deck JSON: ", e)
         return deck
 
     @classmethod
@@ -48,16 +53,17 @@ class Deck:
         deck._load_deck_from_file(file_path)
         return deck
 
-    def _parse_json_deck(self, json_deck: dict):
-        self.name = json_deck["deckName"]
-        self.game = game.GameFactory.create_game(json_deck)
+    def _parse_json_deck(self, deck: dict):
+        self.name = deck.get("deckName", "Unnamed Deck")
+        self.game = game.GameFactory.create_game(deck)
         self.card_list = []
-        for deck_card in json_deck["deckList"]:
+        engine = ScryFallEngine()
+        for deck_card in deck["mainboard"]:
             quantity = deck_card["quantity"]
             for _ in range(quantity):
                 card = deck_card.copy()
                 card.pop("quantity")
-                self.card_list.append(Card.from_json(card))
+                self.card_list.append(engine.search_card(card["name"]))
 
     def _load_deck_from_file(self, file_path: str):
         try:
@@ -66,28 +72,3 @@ class Deck:
         except Exception as e:
             print("An error occured when reading the decklist file: ", e)
             raise e
-
-
-if __name__ == "__main__":
-
-    def example():
-        # Constructor 1
-        deck = Deck(
-            "My Deck",
-            game_type=game.GameFactory.create_game(
-                {"gameType": "standard", "deckList": []}
-            ),
-        )
-
-        # Constructor 2
-        deck = Deck.from_json(
-            {
-                "deckName": "My Deck",
-                "gameType": "standard",
-                "deckList": [],
-            }
-        )
-        # Constructor 3
-        deck = Deck.from_file("./deck_suggestions/_tests/decklist.json")
-
-    example()
