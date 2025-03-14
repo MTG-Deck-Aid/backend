@@ -18,7 +18,7 @@ class CardSuggestor:
 
     def __init__(self):
         try:
-            with open("prompt.txt", "r") as f:
+            with open("Mystic_Tuner_Backend/deck_suggestions/prompt.txt", "r") as f:
                 self.prompt = f.read()
         except Exception as e:
             print("An error occured when reading the prompt file: ", e)
@@ -146,6 +146,7 @@ class GeminiDeckListTuner(DeckListTuner):
         # Remove the extra characters from the response
         response_text = response_text.replace("```python", "")
         response_text = response_text.replace("```", "")
+        print(response_text)
         return json.loads(response_text)
 
     def generate(self, prompt: str, deck: Deck) -> list[dict]:
