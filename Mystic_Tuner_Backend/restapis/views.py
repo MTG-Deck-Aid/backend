@@ -28,6 +28,20 @@ def verify_cards(request):
             return Response(json.dumps(response_data), status = 422)
     except Exception as e:
         return Response({"error verifying card names": str(e)}, status = 400)
+    
+@api_view(["GET"])
+def get_image_links(request):
+    try:
+        card_name = request.data.get("name")
+        if not card_name:
+            return Response({"error": "No card name provided"}, status = 400)
+        engine = ScryFallEngine()
+        image_links = engine.get_image_links(card_name)
+        if not image_links:
+            return Response({"error": "No image links found"}, status = 404)
+        return Response(image_links, status = 200)
+    except Exception as e:
+        return Response({"error getting image links": str(e)}, status = 400)
       
 class AuthenticateLoginTokenAPIView(APIView):
     authentication_classes = []
