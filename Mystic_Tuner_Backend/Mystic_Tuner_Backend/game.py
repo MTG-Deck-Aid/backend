@@ -4,7 +4,7 @@ from enum import Enum
 
 from Mystic_Tuner_Backend.card import Card
 import Mystic_Tuner_Backend.deck as deck
-from backend.Mystic_Tuner_Backend.Mystic_Tuner_Backend.scryfall_engine.scryfall_engine import ScryFallEngine
+from Mystic_Tuner_Backend.scryfall_engine.scryfall_engine import ScryFallEngine
 
 
 class Game(ABC):
