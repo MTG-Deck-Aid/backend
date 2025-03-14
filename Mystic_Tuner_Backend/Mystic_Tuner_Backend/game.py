@@ -4,7 +4,7 @@ from enum import Enum
 
 from Mystic_Tuner_Backend.card import Card
 import Mystic_Tuner_Backend.deck as deck
-from backend.Mystic_Tuner_Backend.Mystic_Tuner_Backend.scryfall_engine.scryfall_engine import ScryFallEngine
+from Mystic_Tuner_Backend.scryfall_engine.scryfall_engine import ScryFallEngine
 
 
 class Game(ABC):
@@ -48,7 +48,7 @@ class GameFactory:
             return Standard()
         elif game_type == Game.Type.COMMANDER.value:
             # Get the commander card
-            commander_name: str = deck["decklist"]["commander"]
+            commander_name: str = deck["commander"]
             return Commander(ScryFallEngine().validate_commander(commander_name))
         else:
             raise ValueError("Invalid game type provided.")

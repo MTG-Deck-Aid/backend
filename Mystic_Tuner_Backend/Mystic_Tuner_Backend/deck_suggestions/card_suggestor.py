@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from enum import Enum
 import json
 import os
 from Mystic_Tuner_Backend.deck import Deck
@@ -16,9 +17,21 @@ class CardSuggestor:
     The default model is a Google Gemini Model, see that strategy for more information.
     """
 
-    def __init__(self):
+    class OperationStrategy(Enum):
+        ADD = "add"
+        REMOVE = "remove"
+        
+    def __init__(self, operation_strategy: OperationStrategy = OperationStrategy.ADD):
+        self.operation_strategy = operation_strategy
         try:
-            with open("Mystic_Tuner_Backend/deck_suggestions/prompt.txt", "r") as f:
+            if operation_strategy == CardSuggestor.OperationStrategy.ADD:
+                prompt_path = "Mystic_Tuner_Backend/deck_suggestions/add_prompt.txt"
+            elif operation_strategy == CardSuggestor.OperationStrategy.REMOVE:
+                prompt_path = "Mystic_Tuner_Backend/deck_suggestions/remove_prompt.txt"
+            else:
+                raise ValueError("Invalid operation strategy provided.")
+            
+            with open(prompt_path, "r") as f:
                 self.prompt = f.read()
         except Exception as e:
             print("An error occured when reading the prompt file: ", e)
@@ -31,7 +44,7 @@ class CardSuggestor:
 
     def suggest_cards(self, decklist: Deck) -> list[dict]:
         """
-        Suggests cards for a provided decklist.
+        Suggests cards for a provided decklist and assiocated prompt.
 
         params:
             decklist: Deck - The decklist to suggest cards for.
@@ -46,6 +59,7 @@ class DeckListTuner(ABC):
     Abstract base class for the Strategy Pattern.
     Future Models used for card suggestions should inherit from this class.
     """
+
 
     @abstractmethod
     def __init__(self):
@@ -68,15 +82,14 @@ class DeckListTuner(ABC):
     @abstractmethod
     def generate(self, prompt: str, decklist: Deck) -> list[dict]:
         """
-        Suggests cards for a provided deck.
+        Suggests cards for a provided deck using the prompt.
         ---
         params:
             deck: Deck - The deck to suggest cards for.
         returns:
             list[dict] - A list of suggested cards. Where each dictionary contains:
                 {
-                    "card_to_replace": str - The card to replace in the deck.
-                    "card_to_add": str - The card to replace the card with.
+                    "card": str - The card to operate on.
                     "reason": str - The reason for the suggestion.
                 }
         """
@@ -87,6 +100,10 @@ class GeminiDeckListTuner(DeckListTuner):
     """
     Uses Google's Gemini API to suggest cards for a provided decklist.
     Handles all API requests and responses to this external REST API.
+
+    Attributes:
+        
+        client: genai.Client - The client to interact with the Gemini API.
     """
 
     def __init__(self):
@@ -133,9 +150,8 @@ class GeminiDeckListTuner(DeckListTuner):
                 ```python
                 [
                     {
-                        "card_to_replace": "",
-                        "card_to_add": "Grave Pact",
-                        "reason": "More sacrifice synergy with Marchesa and token generation for board control."
+                        "card": "Card Name",
+                        "reason": "Reason for the suggestion."
                     },
                 ]
                 ```
