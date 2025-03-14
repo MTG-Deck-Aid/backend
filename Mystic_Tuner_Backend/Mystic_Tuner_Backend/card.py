@@ -14,10 +14,9 @@ class Card:
         GREEN = "G"
         COLORLESS = ""
 
-    def __init__(self, name: str, colors: list[Color], card_image_url: str):
+    def __init__(self, name: str, colors: list[Color]):
         self.name: str = name
         self.colors: list[Card.Color] = colors
-        self.card_image_url: str = card_image_url
 
 
     def __str__(self):
@@ -37,4 +36,4 @@ class Card:
     def _parse_json_card(self, json_card: dict):
         self.name = json_card["name"]
         self.colors = [Card.Color(color) for color in json_card["colors"]]
-        self.card_image_url = json_card["image_uris"]["normal"]
+        
