@@ -3,6 +3,10 @@ from django.http import JsonResponse
 import requests
 import time
 import json
+import urllib.parse
+
+def encodeURIName(card_name: str) -> str:
+    return urllib.parse.quote(card_name)
 
 class ScryFallEngine:
     """
@@ -25,7 +29,8 @@ class ScryFallEngine:
         time.sleep(0.05)
         if not card_name:
             return None
-        scryfall_url = f"https://api.scryfall.com/cards/named?fuzzy={card_name}"
+        uriName = encodeURIName(card_name)
+        scryfall_url = f"https://api.scryfall.com/cards/named?fuzzy={uriName}"
         headers = {
             'User-Agent': 'MysticTunerApp',
             'Accept': 'application/json'
@@ -53,7 +58,8 @@ class ScryFallEngine:
         time.sleep(0.05)
         if not card_name:
             return None
-        scryfall_url = f"https://api.scryfall.com/cards/named?fuzzy={card_name}"
+        uriName = encodeURIName(card_name)
+        scryfall_url = f"https://api.scryfall.com/cards/named?fuzzy={uriName}"
         headers = {
             'User-Agent': 'MysticTunerApp',
             'Accept': 'application/json'
@@ -99,7 +105,8 @@ class ScryFallEngine:
     def validate_commander(card_name: str) -> Card:
         if not card_name:
             return None
-        scryfall_url = f"https://api.scryfall.com/cards/named?fuzzy={card_name}"
+        uriName = encodeURIName(card_name)
+        scryfall_url = f"https://api.scryfall.com/cards/named?fuzzy={uriName}"
         headers = {
             'User-Agent': 'MysticTunerApp',
             'Accept': 'application/json'
@@ -124,7 +131,8 @@ class ScryFallEngine:
 
         if not card_name:
             return []
-        scryfall_url = f"https://api.scryfall.com/cards/autocomplete?q={card_name}"
+        uriName = encodeURIName(card_name)
+        scryfall_url = f"https://api.scryfall.com/cards/autocomplete?q={uriName}"
         headers = {
             'User-Agent': 'MysticTunerApp',
             'Accept': 'application/json'
@@ -134,6 +142,8 @@ class ScryFallEngine:
         if response.status_code != 200:
             return None
         return card_list
+    
+
 
     
     
