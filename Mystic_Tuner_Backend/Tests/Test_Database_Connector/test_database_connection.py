@@ -16,3 +16,4 @@ def test_change_connection():
     result = instance.change_connection()
 
     assert result == True
+
