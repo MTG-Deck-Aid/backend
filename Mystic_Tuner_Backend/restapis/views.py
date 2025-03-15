@@ -176,9 +176,19 @@ def update_deck(request, deck_id = None):
     except Exception as e:
         return Response({"Failed to Authenticate User": str(e)}, status = 401)
     for card in CardsAdded:
+        card['count'] = card['quantity']
+        del card['quantity']
+
+        card['cardname'] = card['cardName']
+        del card['cardName']
         card['sideboard'] = False
         card['cardtype'] = ""
     for card in CardsRemoved:
+        card['count'] = card['quantity']
+        del card['quantity']
+
+        card['cardname'] = card['cardName']
+        del card['cardName']
         card['sideboard'] = False
         card['cardtype'] = ""
     if CardsAdded != None:
