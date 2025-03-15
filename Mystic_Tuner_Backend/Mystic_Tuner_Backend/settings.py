@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'social_django',
     'restapis',
+    "corsheaders",
 ]
 
 SOCIAL_AUTH_AUTH0_SCOPE = [
@@ -63,7 +64,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
 ]
+
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://localhost:8000"] + os.environ.get("CORS_ALLOWED_ORIGINS", "").split(",")
+
 
 ROOT_URLCONF = 'Mystic_Tuner_Backend.urls'
 
