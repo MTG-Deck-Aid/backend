@@ -11,7 +11,7 @@ class DeckQueries():
     def add_deck(self, user_id, deck_type, deck_name, commander):
         """
         args:
-            user_id (int) - user id
+            user_id (String) - user id
             deck_type (String) - type of deck
             deck_name (String) - name for deck (must be unique for the given user)
             commander (String) - name of commander
@@ -19,7 +19,7 @@ class DeckQueries():
             (int) - number of affected rows
         """
         for deck in self.get_user_decks(user_id):
-            if(deck_name == deck[2]):
+            if(deck_name == deck[1]):
                 raise ValueError("DeckName already exists")
 
         query = "INSERT INTO public.\"Deck\" (\"userId\", \"deckType\", \"deckName\", \"commander\") VALUES (%s, %s, %s, %s);"
@@ -31,7 +31,7 @@ class DeckQueries():
     def get_user_decks(self, user_id):
         """
         args:
-            user_id (int) - user id to get decks from
+            user_id (String) - user id to get decks from
         return:
             (List) - all decks associated with the user
         """
@@ -56,7 +56,7 @@ class DeckQueries():
     def update_deck(self, user_id, deck_type, deck_name, deck_id, commander):
         """
         args:
-            user_id (int) - user id
+            user_id (String) - user id
             deck_type (String) - type of deck (ex. Standard, Commander)
             deck_name (String) - name of deck 
             decK_id (int) - id of deck to update
@@ -75,7 +75,7 @@ class DeckQueries():
     def delete_deck(self, user_id, deck_name):
         """
         args:
-            user_id (int) - user id
+            user_id (String) - user id
             deck_name (String) - name of deck
         return:
             (int) - number of affected rows
