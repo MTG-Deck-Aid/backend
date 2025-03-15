@@ -100,9 +100,11 @@ def get_deck(request, deck_id = None):
     deck_queries = DeckQueries()
 
     results = deck_queries.get_deck(deck_id)
-
-
-    user_decks = deck_queries.get_user_decks(100) # TODO fix to use user id token return from auth0
+    try:
+        user_id = SecurityController.get_user_id(_unpack_file(request)["auth0Token"])
+    except Exception as e:
+        return Response({"error authenticating user" : str(e)}, status = 403)
+    user_decks = deck_queries.get_user_decks(user_id)
 
     if results == None or user_decks == None:
         return Response({"Error" : "couldn't retrieve data"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
