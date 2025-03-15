@@ -132,7 +132,8 @@ def update_deck(request, deck_id = None):
 @api_view(["POST"])
 def get_commander(request):
     try:
-        commander = _unpack_file(request)["commander"]
+        commander = request.data.get('commander')
+        # "commander" is from the JSON file
     except ParseError as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     valid_commander = ScryFallEngine.validate_commander(commander)
