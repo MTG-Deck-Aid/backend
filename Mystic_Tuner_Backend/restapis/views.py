@@ -24,7 +24,7 @@ def verify_cards(request):
         if all_cards_found == 1:
             return Response(status = 200)
         else:
-            return Response(json.dumps(response_data), status = 422)
+            return Response({"invalidNames" : response_data}, status = 422)
     except Exception as e:
         return Response({"error verifying card names": str(e)}, status = 400)
     

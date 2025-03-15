@@ -87,7 +87,10 @@ class ScryFallEngine:
             response = requests.post(scryfall_url, json=data, headers=headers)
             response_data = response.json()
             if response_data["not_found"] != []:
-                return response_data["not_found"],0
+                invalidNames = []
+                for dict in response_data["not_found"]:
+                    invalidNames.append(dict["name"])
+            return invalidNames,0
         return [],1
 
     @staticmethod
