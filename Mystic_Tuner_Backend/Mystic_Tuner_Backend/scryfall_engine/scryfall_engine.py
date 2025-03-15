@@ -78,6 +78,7 @@ class ScryFallEngine:
             'Accept': 'application/json'
         }
         card_groups = [card_names[i:i + MAXBATCHSIZE] for i in range(0, len(card_names),MAXBATCHSIZE)]
+        invalidNames = []
         for group in card_groups:
             data = {
                 'identifiers': []
@@ -87,11 +88,12 @@ class ScryFallEngine:
             response = requests.post(scryfall_url, json=data, headers=headers)
             response_data = response.json()
             if response_data["not_found"] != []:
-                invalidNames = []
                 for dict in response_data["not_found"]:
                     invalidNames.append(dict["name"])
+        if invalidNames != []:
             return invalidNames,0
-        return [],1
+        else:
+            return invalidNames,1
 
     @staticmethod
     def validate_commander(card_name: str) -> Card:
@@ -109,7 +111,7 @@ class ScryFallEngine:
             return None
         if card_data['legalities']['commander'] != 'legal':
             return None
-        if ("Legendary Creature" not in card_data['type_line']) and ("can be your commander" not in card_data['oracle_text']) and ("Legendary Planeswalker" not in card_data['type_line']):
+        if ("Legendary Creature" not in card_data['type_line']) and ("can be your commander" not in card_data['oracle_text']):
             return None
         else:
             return Card.from_json(card_data)
