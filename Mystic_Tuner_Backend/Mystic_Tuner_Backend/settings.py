@@ -69,7 +69,6 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://localhost:8000"] + os.environ.get("CORS_ALLOWED_ORIGINS", "").split(",")
 
-
 ROOT_URLCONF = 'Mystic_Tuner_Backend.urls'
 
 TEMPLATES = [
