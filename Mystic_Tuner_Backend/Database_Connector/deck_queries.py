@@ -35,7 +35,7 @@ class DeckQueries():
         return:
             (List) - all decks associated with the user
         """
-        query = "SELECT * FROM public.\"Deck\" WHERE \"userId\" = %s ORDER BY \"DID\" ASC;"
+        query = "SELECT * FROM public.\"Deck\" WHERE \"userId\" = '%s' ORDER BY \"DID\" ASC;"
         params = (user_id,)
 
         return self.connection.execute_query(query, params)

@@ -92,7 +92,7 @@ def suggestions(request):
 def get_user_decks(request):
     engine = ScryFallEngine()
     try: 
-        userID = SecurityController().get_user_id(request.data.get("access_token"))
+        userID = SecurityController().get_user_id(request.data.get("auth0Token"))
     except Exception as e:
         return Response({"Failed to Authenticate error": str(e)}, status = 403)
     deck_queries = DeckQueries()
@@ -100,15 +100,28 @@ def get_user_decks(request):
     if user_decks == None:
         return Response({"decks": []}, status = 200)
     
-    for deck in user_decks:
-        if deck['deckType'] == 'commander':
+    decks = []
+    for decklist in user_decks:
+        deck = {
+            'deckName': decklist[1],
+            'deckType': decklist[0],
+            'deckID': decklist[2],
+            'userId': decklist[4],
+            'commander': decklist[3]
+        }
+        
+
+        
+        if deck['deckType'] == 'Commander':
             imageLinks = engine.get_image_links(deck['commander'])
             deck['commanderImage'] = imageLinks['normal']
-        deck['deckID'] = deck['DID']
-        del deck['DID']
         del deck['deckType']
         del deck['userId']
-    return user_decks
+        del deck["commander"]
+
+        decks.append(deck)
+        
+    return Response({ 'message': 'success', 'status': '200', 'decks': decks}, status = 200)
         
     
     
@@ -155,10 +168,13 @@ def update_deck(request, deck_id = None):
     CardsAdded = request.data.get("cardsAdded")
     CardsRemoved = request.data.get("cardsRemoved")
     authTocken = request.data.get("Auth0_user_token")
-    
-    user_id = SecurityController().get_user_id(authTocken)
-    if user_id == -1:
-        return Response({"error": "Invalid user token"}, status = 401)
+    try:
+        user_id = SecurityController().get_user_id(authTocken)
+        if user_id == -1:
+            return Response({"error": "Invalid user token"}, status = 401)
+        
+    except Exception as e:
+        return Response({"Failed to Authenticate User": str(e)}, status = 401)
     for card in CardsAdded:
         card['sideboard'] = False
         card['cardtype'] = ""
@@ -168,7 +184,7 @@ def update_deck(request, deck_id = None):
     if CardsAdded != None:
         cardQueries.add_cards_to_deck(CardsAdded, deck_id)
     if CardsRemoved != None:
-        cardQueries.remove_cards_from_deck(CardsRemoved, deck_id)
+        cardQueries.remove_cards_from_deck(CardsRemoved, deck_id) # TODO fix remove cards from deck
     return Response({"message": "Successfully updated deck"}, status = 200)
 
 
