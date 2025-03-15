@@ -12,7 +12,7 @@ class SecurityController:
     References: 
     [0] - microapis. "Validate JWTs issued by Auth0 in FastAPI" .Youtube. https://www.youtube.com/watch?v=AtmyC945_no&list=PLZGraXskpvb8JX17hMZoYQRmMr0fo97G6&index=3
     """
-    jws_well_knowns = f"{os.environ.get("AUTH0_DOMAIN")}/.well-known/jwks.json"
+    jws_well_knowns = f"{os.environ.get('AUTH0_DOMAIN')}/.well-known/jwks.json"
     jws_keys = requests.get(jws_well_knowns).json()["keys"]
 
     def __init__(self):
