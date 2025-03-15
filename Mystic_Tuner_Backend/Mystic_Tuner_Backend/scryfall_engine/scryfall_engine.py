@@ -87,7 +87,10 @@ class ScryFallEngine:
             response = requests.post(scryfall_url, json=data, headers=headers)
             response_data = response.json()
             if response_data["not_found"] != []:
-                return response_data["not_found"],0
+                invalidNames = []
+                for dict in response_data["not_found"]:
+                    invalidNames.append(dict["name"])
+            return invalidNames,0
         return [],1
 
     @staticmethod
@@ -110,6 +113,25 @@ class ScryFallEngine:
             return None
         else:
             return Card.from_json(card_data)
+        
+    @staticmethod
+    def autocomplete(card_name: str) -> list[str]:
+        """
+        Search for potential cards
+        """
+
+        if not card_name:
+            return []
+        scryfall_url = f"https://api.scryfall.com/cards/autocomplete?q={card_name}"
+        headers = {
+            'User-Agent': 'MysticTunerApp',
+            'Accept': 'application/json'
+        }
+        response = requests.get(scryfall_url, headers=headers)
+        card_list: list[str] = response.json()["data"]
+        if response.status_code != 200:
+            return None
+        return card_list
 
     
     
