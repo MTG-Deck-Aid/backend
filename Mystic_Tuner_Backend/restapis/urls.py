@@ -15,6 +15,8 @@ urlpatterns = [
     path('decks/commander', get_commander, name="commander"),
     path('decks/verify-cards', verify_cards, name="verify_cards"),
     path('decks/<int:deck_id>/', get_deck),
+    path('decks/update/<int:deck_id>/', update_deck),
+    path('decks/', get_user_decks),
     path('decks/get-image-links', get_image_links, name="get_image_links"),
     path('decks/verify-cards/', verify_cards, name="verify_cards"),
     path("decks/autocomplete/", autocomplete_search, name="autocomplete_search"),

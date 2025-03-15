@@ -90,12 +90,48 @@ def suggestions(request):
 
 @api_view(["POST"])
 def get_user_decks(request):
-    return Response({"TODO"}, status = status.HTTP_418_IM_A_TEAPOT)
+    engine = ScryFallEngine()
+    try: 
+        userID = SecurityController().get_user_id(request.data.get("auth0Token"))
+    except Exception as e:
+        return Response({"Failed to Authenticate error": str(e)}, status = 403)
+    deck_queries = DeckQueries()
+    user_decks = deck_queries.get_user_decks(userID)
+    if user_decks == None:
+        return Response({"decks": []}, status = 200)
+    
+    decks = []
+    for decklist in user_decks:
+        deck = {
+            'deckName': decklist[1],
+            'deckType': decklist[0],
+            'deckID': decklist[2],
+            'userId': decklist[4],
+            'commander': decklist[3]
+        }
+        
+
+        
+        if deck['deckType'] == 'Commander':
+            imageLinks = engine.get_image_links(deck['commander'])
+            deck['commanderImage'] = imageLinks['normal']
+        del deck['deckType']
+        del deck['userId']
+        del deck["commander"]
+
+        decks.append(deck)
+        
+    return Response({ 'message': 'success', 'status': '200', 'decks': decks}, status = 200)
+        
+    
+    
+    
+    return Response({"decks": user_decks}, status = 200)
 
 @api_view(["GET"])
 def get_deck(request, deck_id = None):
     if(deck_id == None):
-            return Response({"TODO"}, status = status.HTTP_418_IM_A_TEAPOT)
+            return Response({"No Deck ID provided"}, status = status.HTTP_418_IM_A_TEAPOT)
 
     deck_queries = DeckQueries()
 
@@ -126,7 +162,43 @@ def get_deck(request, deck_id = None):
 
 @api_view(["PATCH"])
 def update_deck(request, deck_id = None):
-    return Response({"TODO"}, status = status.HTTP_418_IM_A_TEAPOT)
+    cardQueries = CardQueries()
+    if deck_id == None:
+        return Response({"No Deck ID provided"}, status = 401)
+    CardsAdded = request.data.get("cardsAdded")
+    CardsRemoved = request.data.get("cardsRemoved")
+    authTocken = request.data.get("Auth0_user_token")
+    try:
+        user_id = SecurityController().get_user_id(authTocken)
+        if user_id == -1:
+            return Response({"error": "Invalid user token"}, status = 401)
+        
+    except Exception as e:
+        return Response({"Failed to Authenticate User": str(e)}, status = 401)
+    for card in CardsAdded:
+        card['count'] = card['quantity']
+        del card['quantity']
+
+        card['cardname'] = card['cardName']
+        del card['cardName']
+        card['sideboard'] = False
+        card['cardtype'] = ""
+    for card in CardsRemoved:
+        card['count'] = card['quantity']
+        del card['quantity']
+
+        card['cardname'] = card['cardName']
+        del card['cardName']
+        card['sideboard'] = False
+        card['cardtype'] = ""
+    if CardsAdded != None:
+        cardQueries.add_cards_to_deck(CardsAdded, deck_id)
+    if CardsRemoved != None:
+        cardQueries.remove_cards_from_deck(CardsRemoved, deck_id) # TODO fix remove cards from deck
+    return Response({"message": "Successfully updated deck"}, status = 200)
+
+
+    
 
 
 @api_view(["POST"])
