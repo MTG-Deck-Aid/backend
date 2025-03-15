@@ -111,6 +111,7 @@ class CardQueries():
         """
         cards = cards.copy()
         for card in cards:
+            card['count'] *= -1
             if card['count'] is None or card['count'] > 0:
                 print(f"card count to remove must be less than 0: {card['cardname']}")
                 return False
