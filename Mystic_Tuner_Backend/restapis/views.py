@@ -196,6 +196,7 @@ def create_new_deck(request):
 @api_view(["GET"])
 def get_user_id(request):
     access_token = request.headers.get("Authorization")
+    access_token = access_token.split(" ")[1]
     print(f"access token: {access_token}")
     return Response({"userId": SecurityController().get_user_id(access_token)}, status = status.HTTP_200_OK)
 
