@@ -280,7 +280,7 @@ def test_delete_card_wrong_deck(setup_and_teardown):
 def test_remove_partial_amount(setup_and_teardown):
     query_generator = CardQueries()
 
-    target_card = [{'cardname': 'Card A', 'sideboard': False, 'cardtype': 'Creature', 'count': -2}]
+    target_card = [{'cardname': 'Card A', 'sideboard': False, 'cardtype': 'Creature', 'count': 2}]
 
     
     rows_affected = query_generator.remove_cards_from_deck(target_card, setup_and_teardown)
@@ -302,7 +302,7 @@ def test_remove_partial_amount(setup_and_teardown):
 def test_remove_full_amount(setup_and_teardown):
     query_generator = CardQueries()
 
-    target_card = [{'cardname': 'Card A', 'sideboard': False, 'cardtype': 'Creature', 'count': -3}]
+    target_card = [{'cardname': 'Card A', 'sideboard': False, 'cardtype': 'Creature', 'count': 3}]
 
     
     rows_affected = query_generator.remove_cards_from_deck(target_card, setup_and_teardown)
@@ -316,7 +316,7 @@ def test_remove_full_amount(setup_and_teardown):
 def test_remove_excess_amount(setup_and_teardown):
     query_generator = CardQueries()
 
-    target_card = [{'cardname': 'Card A', 'sideboard': False, 'cardtype': 'Creature', 'count': -10}]
+    target_card = [{'cardname': 'Card A', 'sideboard': False, 'cardtype': 'Creature', 'count': 10}]
 
     
     rows_affected = query_generator.remove_cards_from_deck(target_card, setup_and_teardown)
@@ -330,7 +330,7 @@ def test_remove_excess_amount(setup_and_teardown):
 def test_remove_positive_amount(setup_and_teardown):
     query_generator = CardQueries()
 
-    target_card = [{'cardname': 'Card A', 'sideboard': False, 'cardtype': 'Creature', 'count': 1}]
+    target_card = [{'cardname': 'Card A', 'sideboard': False, 'cardtype': 'Creature', 'count': -1}]
 
     
     results = query_generator.remove_cards_from_deck(target_card, setup_and_teardown)
