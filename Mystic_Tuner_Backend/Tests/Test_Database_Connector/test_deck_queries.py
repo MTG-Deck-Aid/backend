@@ -13,11 +13,11 @@ def setup_and_teardown():
         ]
     
     decks = [
-        [10, "Commander", "Deck1", "Card A"],
-        [10, "Commander", "Deck2", None],
-        [10, "Standard", "Deck3", None],
-        [20, "Commander", "Deck4", None],
-        [20, "Modern", "Deck5", None]
+        ["10", "Commander", "Deck1", "Card A"],
+        ["10", "Commander", "Deck2", None],
+        ["10", "Standard", "Deck3", None],
+        ["20", "Commander", "Deck4", None],
+        ["20", "Modern", "Deck5", None]
     ]
 
     try:
@@ -30,11 +30,11 @@ def setup_and_teardown():
     except ValueError as e:
         pass #Decks already exist/ not an issue
 
-    user_decks = query_generator.get_user_decks(10)
+    user_decks = query_generator.get_user_decks("10")
     deck_id = None
     for deck in user_decks:
-        if deck[2] == "Deck1":
-            deck_id = deck[3]
+        if deck[1] == "Deck1":
+            deck_id = deck[2]
 
     if deck_id == None:
         raise Exception()
@@ -57,14 +57,14 @@ def setup_and_teardown():
 
     query_generator = DeckQueries()
 
-    query_generator.delete_deck(10, "Deck1")
-    query_generator.delete_deck(10, "Deck2")
-    query_generator.delete_deck(10, "Deck3")
-    query_generator.delete_deck(20, "Deck4")
-    query_generator.delete_deck(20, "Deck5")
+    query_generator.delete_deck("10", "Deck1")
+    query_generator.delete_deck("10", "Deck2")
+    query_generator.delete_deck("10", "Deck3")
+    query_generator.delete_deck("20", "Deck4")
+    query_generator.delete_deck("20", "Deck5")
 
-    query_generator.delete_deck(10, "Test_deck")
-    query_generator.delete_deck(11, "Test_deck")
+    query_generator.delete_deck("10", "Test_deck")
+    query_generator.delete_deck("11", "Test_deck")
 
 
 #
@@ -73,7 +73,7 @@ def setup_and_teardown():
 def test_create_deck(setup_and_teardown):
     query_generator = DeckQueries()
 
-    deck_to_add = [10, "Standard", "Test_deck", None]
+    deck_to_add = ["10", "Standard", "Test_deck", None]
 
     query_generator.add_deck(deck_to_add[0], deck_to_add[1], deck_to_add[2], deck_to_add[3])
 
@@ -82,7 +82,7 @@ def test_create_deck(setup_and_teardown):
     correct = False
 
     for deck in tested_decks:
-        if deck[1] == deck_to_add[1] and deck[2] == deck_to_add[2]:
+        if deck[0] == deck_to_add[1] and deck[1] == deck_to_add[2]:
             correct = True
             break
     
@@ -91,7 +91,7 @@ def test_create_deck(setup_and_teardown):
 def test_create_deck_none_name(setup_and_teardown):
     query_generator = DeckQueries()
 
-    deck_to_add = [10, "Standard", None, None]
+    deck_to_add = ["10", "Standard", None, None]
 
     result = query_generator.add_deck(deck_to_add[0], deck_to_add[1], deck_to_add[2], deck_to_add[3])
 
@@ -100,7 +100,7 @@ def test_create_deck_none_name(setup_and_teardown):
 def test_create_deck_none_type(setup_and_teardown):
     query_generator = DeckQueries()
 
-    deck_to_add = [10, None, "Test_deck", None]
+    deck_to_add = ["10", None, "Test_deck", None]
 
     result = query_generator.add_deck(deck_to_add[0], deck_to_add[1], deck_to_add[2], deck_to_add[3])
 
@@ -118,7 +118,7 @@ def test_create_deck_none_user(setup_and_teardown):
 def test_create_existing_deck(setup_and_teardown):
     query_generator = DeckQueries()
 
-    deck_to_add = [10, "Standard", "Deck1", None]
+    deck_to_add = ["10", "Standard", "Deck1", None]
 
     with pytest.raises(ValueError):
         query_generator.add_deck(deck_to_add[0], deck_to_add[1], deck_to_add[2], deck_to_add[3])
@@ -130,7 +130,7 @@ def test_create_existing_deck(setup_and_teardown):
 def test_get_all_user_decks(setup_and_teardown):
     query_generator = DeckQueries()
 
-    decks = query_generator.get_user_decks(10)
+    decks = query_generator.get_user_decks("10")
 
     correct_values = [        
         ["Commander", "Deck1"],
@@ -140,14 +140,14 @@ def test_get_all_user_decks(setup_and_teardown):
     for deck in decks:
         correct = False
         for value in correct_values:
-            if(value[0] == deck[1] and value[1] == deck[2]):
+            if(value[0] == deck[0] and value[1] == deck[1]):
                 correct = True
                 break
         assert correct == True
 
 def test_get_all_user_decks_none_user(setup_and_teardown):
     query_generator = DeckQueries()
-    decks = query_generator.get_user_decks(-1)
+    decks = query_generator.get_user_decks("-1")
 
     assert len(decks) == 0
 
@@ -169,17 +169,17 @@ def test_get_empty_deck(setup_and_teardown):
 def test_update_deck(setup_and_teardown):
     query_generator = DeckQueries()
 
-    query_generator.update_deck(11, "Pauper", "Test_deck", setup_and_teardown, None)
+    query_generator.update_deck("11", "Pauper", "Test_deck", setup_and_teardown, None)
 
-    decks = query_generator.get_user_decks(11)
+    decks = query_generator.get_user_decks("11")
 
-    assert decks[0][0] == 11
+    assert decks[0][4] == "11"
 
-    assert decks[0][1] == "Pauper"
+    assert decks[0][0] == "Pauper"
 
-    assert decks[0][2] == "Test_deck"
+    assert decks[0][1] == "Test_deck"
 
-    assert decks[0][4] == None
+    assert decks[0][3] == None
 
 def test_update_deck_invalid_user(setup_and_teardown):
     query_generator = DeckQueries()
@@ -191,14 +191,14 @@ def test_update_deck_invalid_user(setup_and_teardown):
 def test_update_deck_invalid_type(setup_and_teardown):
     query_generator = DeckQueries()
     
-    result = query_generator.update_deck(11, None, "Test_deck", setup_and_teardown, None)
+    result = query_generator.update_deck("11", None, "Test_deck", setup_and_teardown, None)
 
     assert result == False
 
 def test_update_deck_invalid_name(setup_and_teardown):
     query_generator = DeckQueries()
     
-    result = query_generator.update_deck(11, "Pauper", None, setup_and_teardown, None)
+    result = query_generator.update_deck("11", "Pauper", None, setup_and_teardown, None)
 
     assert result == False
 #
@@ -208,16 +208,16 @@ def test_update_deck_invalid_name(setup_and_teardown):
 def test_delete_deck(setup_and_teardown):
     query_generator = DeckQueries()
 
-    rows_affected = query_generator.delete_deck(10, "Deck1")
+    rows_affected = query_generator.delete_deck("10", "Deck1")
 
     assert rows_affected == 1
 
-    results = query_generator.get_user_decks(10)
+    results = query_generator.get_user_decks("10")
 
     correct = True
     
     for deck in results:
-        if deck[2] == "Deck1":
+        if deck[1] == "Deck1":
             correct = False
             break
 
@@ -227,24 +227,26 @@ def test_delete_deck(setup_and_teardown):
 def test_delete_nonexistant_deck(setup_and_teardown):
     query_generator = DeckQueries()
 
-    rows_affected = query_generator.delete_deck(10, "Nonexistant_Deck")
+    rows_affected = query_generator.delete_deck("10", "Nonexistant_Deck")
 
     assert rows_affected == 0
 
 def test_delete_deck_wrong_user(setup_and_teardown):
     query_generator = DeckQueries()
 
-    rows_affected = query_generator.delete_deck(11, "Deck1")
+    rows_affected = query_generator.delete_deck("11", "Deck1")
 
     assert rows_affected == 0
 
-    results = query_generator.get_user_decks(10)
+    results = query_generator.get_user_decks("10")
 
     correct = False
     
     for deck in results:
-        if deck[2] == "Deck1":
+        if deck[1] == "Deck1":
             correct = True
             break
 
     assert correct == True
+
+

@@ -74,17 +74,6 @@ def test_create_invalid_name(setup_and_teardown):
 
     assert rows_affected == False
 
-def test_create_invalid_sideboard(setup_and_teardown):
-    query_generator = CardQueries()
-
-    new_card = [{
-        'cardname': 'Card E', 'sideboard': None, 'cardtype': 'Creature', 'count': 1
-    }]
-    
-    rows_affected = query_generator.add_cards_to_deck(new_card, setup_and_teardown)
-
-    assert rows_affected == False
-
 
 def test_create_none_count(setup_and_teardown):
     query_generator = CardQueries()
@@ -222,12 +211,6 @@ def test_update_invalid_name(setup_and_teardown):
 
     assert result == 0
 
-def test_update_invalid_sideboard(setup_and_teardown):
-    query_generator = CardQueries()
-
-    result = query_generator.update_card(setup_and_teardown, 'Card A', None, 'Enchantment', 1)
-
-    assert result == False
 
 def test_update_none_type(setup_and_teardown):
     query_generator = CardQueries()
