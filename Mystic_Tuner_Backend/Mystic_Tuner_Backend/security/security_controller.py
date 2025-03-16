@@ -1,8 +1,5 @@
-import json
 import os
-from dotenv import load_dotenv
 import requests
-import http.client
 import jose.jwt as jws
 class SecurityController:
     """
