@@ -1,8 +1,7 @@
+import os
 import psycopg2
 from psycopg2.extras import execute_values
-from django.db import connection
-from django.utils.connection import ConnectionProxy
-
+from urllib.parse import urlparse
 class DatabaseConnector():
     """
     Singleton connector class that excutes queries passed to it
@@ -39,17 +38,26 @@ class DatabaseConnector():
             success of connection (boolean)
         """
         try:
-            # TODO get this operational with django locally
-            self.connection: ConnectionProxy = connection
-            # Alternatively, call os.environ.get() to get the environment variables
-            # Must account for both development and production environments vars see settings.py
-            # self.connection = psycopg2.connect(
-            #     host = host,
-            #     dbname = database_name,
-            #     user = user,
-            #     password = password,
-            #     port = port
-            # )
+            # If the DATABASE_URL environment variable is set, use that to connect to the database
+            # DATABASE_URL provides a Heroku Postgres Login for application purposes
+            # Parse the DATABASE_URL environment variable into it's components
+            if 'DATABASE_URL' in os.environ:
+                parsed_url = urlparse(os.environ['DATABASE_URL'])
+                self.connection = psycopg2.connect(
+                    dbname = parsed_url.path[1:],
+                    user = parsed_url.username,
+                    password = parsed_url.password,
+                    host = parsed_url.hostname,
+                    port = parsed_url.port
+                )
+            else:
+                self.connection = psycopg2.connect(
+                    host = host,
+                    dbname = database_name,
+                    user = user,
+                    password = password,
+                    port = port
+                )
             print("Connection successfully established with database")
 
         except Exception as e:
