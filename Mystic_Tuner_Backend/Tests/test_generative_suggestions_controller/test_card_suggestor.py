@@ -4,8 +4,10 @@ Decklist used:
 - [1] Brendan Smiley. Moxfield. "Marchesa, The Black Rose 🥀🖤" .https://moxfield.com/decks/zGF0eVfcmkqgDDPsKFFu9A
 
 NOTE: To run the unit tests:
-    1. Navigate to the deck_suggestion directory.
-    2. Run the command 'python -m unittest ./_tests/test_card_suggestor.py'.
+    1. pytest must be installed
+    2. Navigate to the backend/Mystic_Tuner_Backend directory
+    3. Run the command `pytest` for all
+    4. You can run just this file by running the command `pytest ./Tests/test_generative_suggestions_controller/test_card_suggestor.py`
 """
 
 import pytest
