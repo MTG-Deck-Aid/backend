@@ -1,0 +1,37 @@
+{
+  "num_to_add": 1,
+  "num_to_remove": 2,
+  "decklist": {
+    "commander": "Marchesha The Black Rose",
+    "mainboard": [
+      {
+        "name": "Ashnod's Al",
+        "quantity": 1
+      },
+      {
+        "name": "Demonic Tut",
+        "quantity": 1
+      },
+      {
+        "name": "Counterspell",
+        "quantity": 1
+      },
+      {
+        "name": "Sol Ring",
+        "quantity": 1
+      },
+      {
+        "name": "Swamp",
+        "quantity": 9
+      },
+      {
+        "name": "Island",
+        "quantity": 9
+      },
+      {
+        "name": "Mountain",
+        "quantity": 12
+      }
+    ]
+  }
+}
