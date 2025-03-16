@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 import os
 from datetime import timedelta
+import dj_database_url
 
 load_dotenv()
 
@@ -30,10 +31,8 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 DEBUG = os.environ.get("DEBUG") == "True"
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",") # For Dev add to .env DJANGO_ALLOWED_HOSTS="localhost",
-print("ALLOWED HOSTS: ", ALLOWED_HOSTS)
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -146,3 +145,20 @@ REST_FRAMEWORK = {
         "restapis.auth0_authentication.Auth0JSONWebTokenAuthentication",
     ),
 }
+
+# Postgres SQL Database Integration for Development
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ.get("DB_NAME", "mystictuner"), # Prod, Default
+        'USER': os.environ.get("DB_USER", "postgres"), # Prod, Default
+        "PASSWORD": os.environ.get("DB_PASSWORD", "postgres"), # Prod, Default
+        "HOST": os.environ.get("DB_HOST", "localhost"), # Prod, Default
+        "PORT": os.environ.get("DB_PORT", "5432"), # Prod, Default
+    }
+}
+
+# Heroku Postgres Integration Override
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if DATABASE_URL:
+    DATABASES["default"] = dj_database_url.config(default=DATABASE_URL, conn_max_age=600, ssl_require=True)
