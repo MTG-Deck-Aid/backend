@@ -1,6 +1,6 @@
 # PRODUCTION/STAGING PROCFILE
 
-web: gunicorn --config gunicorn.conf.py Mystic_Tuner_Backend.wsgi
+web: cd ./Mystic_Tuner_Backend && gunicorn --config gunicorn.conf.py Mystic_Tuner_Backend.wsgi
 
 # For database Django migrations
 

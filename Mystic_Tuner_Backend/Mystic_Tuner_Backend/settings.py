@@ -27,10 +27,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG")
+DEBUG = os.environ.get("DEBUG") == "True"
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(",") + ["localhost"]
-
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",") # For Dev add to .env DJANGO_ALLOWED_HOSTS="localhost",
+print("ALLOWED HOSTS: ", ALLOWED_HOSTS)
 
 # Application definition
 
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'social_django',
     'restapis',
+    "corsheaders",
 ]
 
 SOCIAL_AUTH_AUTH0_SCOPE = [
@@ -63,7 +64,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
 ]
+
+CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", "").split(",") # For Dev add to .env CORS_ALLOWED_ORIGINS="http://localhost:3000"
 
 ROOT_URLCONF = 'Mystic_Tuner_Backend.urls'
 

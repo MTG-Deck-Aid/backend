@@ -13,7 +13,7 @@ urlpatterns = [
     # Decks 
     path('new-deck/', create_new_deck),
     path('decks/commander', get_commander, name="commander"),
-    path('decks/verify-cards', verify_cards, name="verify_cards"),
+    path('decks/verify-cards/', verify_cards, name="verify_cards"),
     path('decks/<int:deck_id>/', get_deck),
     path('decks/update/<int:deck_id>/', update_deck),
     path('decks/', get_user_decks),
