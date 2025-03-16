@@ -1,5 +1,7 @@
 import psycopg2
 from psycopg2.extras import execute_values
+from django.db import connection
+from django.utils.connection import ConnectionProxy
 
 class DatabaseConnector():
     """
@@ -36,15 +38,18 @@ class DatabaseConnector():
         return:
             success of connection (boolean)
         """
-        #TODO implement environment variables to get connection details
         try:
-            self.connection = psycopg2.connect(
-                host = host,
-                dbname = database_name,
-                user = user,
-                password = password,
-                port = port
-            )
+            # TODO get this operational with django locally
+            self.connection: ConnectionProxy = connection
+            # Alternatively, call os.environ.get() to get the environment variables
+            # Must account for both development and production environments vars see settings.py
+            # self.connection = psycopg2.connect(
+            #     host = host,
+            #     dbname = database_name,
+            #     user = user,
+            #     password = password,
+            #     port = port
+            # )
             print("Connection successfully established with database")
 
         except Exception as e:
