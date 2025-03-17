@@ -92,7 +92,9 @@ def suggestions(request):
 def get_user_decks(request):
     engine = ScryFallEngine()
     try: 
-        userID = SecurityController().get_user_id(request.data.get("auth0Token"))
+        token = request.headers.get("Authorization")
+        token = token.split(" ")[1]
+        userID = SecurityController().get_user_id(token)
     except Exception as e:
         return Response({"Failed to Authenticate error": str(e)}, status = 403)
     deck_queries = DeckQueries()
@@ -167,7 +169,8 @@ def update_deck(request, deck_id = None):
         return Response({"No Deck ID provided"}, status = 401)
     CardsAdded = request.data.get("cardsAdded")
     CardsRemoved = request.data.get("cardsRemoved")
-    authTocken = request.data.get("Auth0_user_token")
+    authTocken = request.headers.get("Authorization")
+    authToken = authToken.split(" ")[1]
     try:
         user_id = SecurityController().get_user_id(authTocken)
         if user_id == -1:
