@@ -135,19 +135,20 @@ REST_FRAMEWORK = {
     ),
 }
 
-# Postgres SQL Database Integration for Development
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get("DB_NAME", "mystictuner"), # Prod, Default
-        'USER': os.environ.get("DB_USER", "postgres"), # Prod, Default
-        "PASSWORD": os.environ.get("DB_PASSWORD", "postgres"), # Prod, Default
-        "HOST": os.environ.get("DB_HOST", "localhost"), # Prod, Default
-        "PORT": os.environ.get("DB_PORT", "5432"), # Prod, Default
-    }
-}
+# TODO: We may need this still
+# # Postgres SQL Database Integration for Development
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': os.environ.get("DB_NAME", "mystictuner"), # Prod, Default
+#         'USER': os.environ.get("DB_USER", "postgres"), # Prod, Default
+#         "PASSWORD": os.environ.get("DB_PASSWORD", "postgres"), # Prod, Default
+#         "HOST": os.environ.get("DB_HOST", "localhost"), # Prod, Default
+#         "PORT": os.environ.get("DB_PORT", "5432"), # Prod, Default
+#     }
+# }
 
-# Heroku Postgres Integration Override
-DATABASE_URL = os.environ.get("DATABASE_URL")
-if DATABASE_URL:
-    DATABASES["default"] = dj_database_url.config(default=DATABASE_URL, conn_max_age=600, ssl_require=True)
+# # Heroku Postgres Integration Override
+# DATABASE_URL = os.environ.get("DATABASE_URL")
+# if DATABASE_URL:
+#     DATABASES["default"] = dj_database_url.config(default=DATABASE_URL, conn_max_age=600, ssl_require=True)
