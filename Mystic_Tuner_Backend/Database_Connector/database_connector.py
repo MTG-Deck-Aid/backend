@@ -50,6 +50,14 @@ class DatabaseConnector():
                     host = parsed_url.hostname,
                     port = parsed_url.port
                 )
+            elif "DB_HOST" in os.environ:
+                self.connection = psycopg2.connect(
+                    host = os.environ["DB_HOST"],
+                    dbname = os.environ["DB_NAME"],
+                    user = os.environ["DB_USER"],
+                    password = os.environ["DB_PASSWORD"],
+                    port = os.environ["DB_PORT"]
+                )
             else:
                 self.connection = psycopg2.connect(
                     host = host,
