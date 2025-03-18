@@ -36,5 +36,9 @@ class Card:
 
     def _parse_json_card(self, json_card: dict):
         self.name = json_card["name"]
-        self.colors = [Card.Color(color) for color in json_card["colors"]]
+        if "colors" in json_card:
+            self.colors = [Card.Color(color) for color in json_card["colors"]]
+        else:
+            self.colors = []
+        
         

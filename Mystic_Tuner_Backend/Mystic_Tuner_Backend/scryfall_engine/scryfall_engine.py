@@ -120,7 +120,12 @@ class ScryFallEngine:
             return None
         if ("Legendary Creature" not in card_data['type_line']) and ("can be your commander" not in card_data['oracle_text']):
             return None
+        multisided = card_data.get('card_faces', None)
+        if multisided and len(multisided) > 1:
+            return None
         else:
+            if card_data['name'] == "Invasion of Fiora // Marchesa, Resolute Monarch":
+                print(card_data)
             return Card.from_json(card_data)
         
     @staticmethod
