@@ -42,7 +42,7 @@ class SecurityController:
         except Exception as e:
             raise Exception(f"Error validating JWT token: {e}")
 
-    def get_user_id(self, access_token: str) -> int:
+    def get_user_id(self, access_token: str) -> str:
         """
         Validates the access token and returns the assiocated user id.
         Once verified that the access token is valid we can use the sub claim to get the user id.
