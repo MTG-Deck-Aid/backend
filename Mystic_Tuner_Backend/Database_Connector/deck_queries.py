@@ -22,7 +22,7 @@ class DeckQueries():
             if(deck_name == deck[1]):
                 raise ValueError("DeckName already exists")
 
-        query = "INSERT INTO public.\"Deck\" (\"userId\", \"deckType\", \"deckName\", \"commander\") VALUES (%s, %s, %s, %s);"
+        query = "INSERT INTO \"deck\" (\"userId\", \"deckType\", \"deckName\", \"commander\") VALUES (%s, %s, %s, %s);"
         params = (user_id, deck_type, deck_name, commander)
 
         return self.connection.execute_query(query, params, False)
@@ -35,7 +35,7 @@ class DeckQueries():
         return:
             (List) - all decks associated with the user
         """
-        query = "SELECT * FROM public.\"Deck\" WHERE \"userId\" = %s ORDER BY \"DID\" ASC;"
+        query = "SELECT * FROM \"deck\" WHERE \"userId\" = %s ORDER BY \"DID\" ASC;"
         params = (user_id,)
 
         return self.connection.execute_query(query, params)
@@ -47,7 +47,7 @@ class DeckQueries():
         return:
             (List) - the specific deck
         """
-        query = "SELECT * FROM public.\"Card\" WHERE \"deckid\" = %s ORDER BY id ASC;"
+        query = "SELECT * FROM \"card\" WHERE \"deckid\" = %s ORDER BY id ASC;"
         params = (deck_id,)
 
         return self.connection.execute_query(query, params)
@@ -66,7 +66,7 @@ class DeckQueries():
 
             Overwites existing deck's information with the new data
         """
-        query = "UPDATE public.\"Deck\" SET \"userId\" = %s, \"deckType\" = %s, \"deckName\" = %s, \"commander\" = %s WHERE \"DID\" = %s;"
+        query = "UPDATE \"deck\" SET \"userId\" = %s, \"deckType\" = %s, \"deckName\" = %s, \"commander\" = %s WHERE \"DID\" = %s;"
         params = (user_id, deck_type, deck_name, commander, deck_id)
         
         return self.connection.execute_query(query, params, False)
@@ -82,7 +82,7 @@ class DeckQueries():
 
         All asociated cards with the deleted deck are deleted as well
         """
-        query = "DELETE FROM public.\"Deck\" WHERE \"userId\" = %s AND \"deckName\" = %s;"
+        query = "DELETE FROM \"deck\" WHERE \"userId\" = %s AND \"deckName\" = %s;"
         params = (user_id, deck_name)
 
         return self.connection.execute_query(query, params, False)
