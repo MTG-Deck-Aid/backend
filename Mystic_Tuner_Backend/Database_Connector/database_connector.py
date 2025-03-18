@@ -41,7 +41,10 @@ class DatabaseConnector():
             # If the DATABASE_URL environment variable is set, use that to connect to the database
             # DATABASE_URL provides a Heroku Postgres Login for application purposes
             # Parse the DATABASE_URL environment variable into it's components
+            print("Establishing connection to database")
+            
             if 'DATABASE_URL' in os.environ:
+                print("Using Heroku Postgres Database")
                 parsed_url = urlparse(os.environ['DATABASE_URL'])
                 self.connection = psycopg2.connect(
                     dbname = parsed_url.path[1:],
@@ -51,6 +54,7 @@ class DatabaseConnector():
                     port = parsed_url.port
                 )
             elif "DB_HOST" in os.environ:
+                print(f"Using local Postgres Database: {os.environ['DB_HOST']}")
                 self.connection = psycopg2.connect(
                     host = os.environ["DB_HOST"],
                     dbname = os.environ["DB_NAME"],
