@@ -309,12 +309,26 @@ def create_new_deck(request):
 
 @api_view(["GET"])
 def autocomplete_search(request):
+    """
+    Returns 
+    """
     print(" ========== AUTOCOMPLETE SEARCH ========== ")
     try:
         query = request.GET.get("q", "")
-        print(f"query: {query}")
+        commander_only  = request.GET.get("commander", "false")
+        print(f"query: {query}, commander_only: {commander_only}")
         cards: list[str] = ScryFallEngine().autocomplete(query)
-        return Response(cards, status = 200)
+
+        filtered_cards = []
+        if commander_only == "true":
+            for card_name in cards:
+                print(f"card_name: {card_name}")
+                card: Card = ScryFallEngine.validate_commander(card_name)
+                if card != None:
+                    filtered_cards.append(card_name)
+        else:
+            filtered_cards = cards
+        return Response(filtered_cards, status = 200)
     except Exception as e:
         return Response({"error getting autocomplete suggestions": str(e)}, status = 400)
 
