@@ -7,7 +7,7 @@ from rest_framework.exceptions import ParseError
 from Database_Connector.card_queries import CardQueries
 from Database_Connector.deck_queries import DeckQueries
 import json
-
+from django_ratelimit.decorators import ratelimit
 from Mystic_Tuner_Backend.scryfall_engine.scryfall_engine import ScryFallEngine
 from Mystic_Tuner_Backend.card import Card
 import json
@@ -16,19 +16,32 @@ from Mystic_Tuner_Backend.deck_suggestions.deck_suggestion_controller import Car
 from Mystic_Tuner_Backend.security.security_controller import SecurityController
 
 # =========================================== NON-USER ROUTES  =========================================== #
+@api_view(["GET","POST", "PUT", "DELETE", "PATCH"])
+def ratelimited_error(request, exception):
+    """
+    How to return a 429 error when the user is ratelimited. (Default is 403 which is the wrong status code)
+    Reference: https://django-ratelimit.readthedocs.io/en/stable/cookbook/429.html 
+    """
+    return Response({"error": "Too many requests"}, status = 429)
+
+
+@ratelimit(key="ip", rate="50/m", method="POST", block=True)
 @api_view(["POST"])
 def verify_cards(request):
     try:
         data = request.data
         cardList = data.get("names",[])
+        print(f"cardList: {cardList}")
         response_data,all_cards_found = ScryFallEngine.batch_validate(cardList)
         if all_cards_found == 1:
             return Response(status = 200)
         else:
             return Response({"invalidNames" : response_data}, status = 422)
     except Exception as e:
+        print(f"Error: {e}")
         return Response({"error verifying card names": str(e)}, status = 400)
-    
+
+@ratelimit(key="ip", rate="50/m", method="GET", block=True)
 @api_view(["GET"])
 def get_image_links(request):
     try:
@@ -42,10 +55,13 @@ def get_image_links(request):
         return Response(image_links, status = 200)
     except Exception as e:
         return Response({"error getting image links": str(e)}, status = 400)
-      
+
+@ratelimit(key="ip", rate="3/m", method="POST", block=True)
 @api_view(["POST"])
 def suggestions(request):
     """
+    Googel Gemini has a Rate Limit of 15 requests per minute, so we will limit the requests to 3 per minute.
+    This allows us to have 5 active users at a time.
     Returns: 
     {
         "cards_to_add":[
@@ -90,6 +106,7 @@ def suggestions(request):
         return Response({"error getting suggestions from gemini": str(e)}, status = 400)
 
 
+@ratelimit(key="ip", rate="50/m", method="POST", block=True)
 @api_view(["POST"])
 def get_commander(request):
     print(" ========== GET COMMANDER ========== ")
@@ -104,7 +121,34 @@ def get_commander(request):
     engine = ScryFallEngine()
     return Response({'commander': valid_commander.name, 'images': engine.get_image_links(valid_commander.name)}, status=status.HTTP_200_OK)
 
+@ratelimit(key="ip", rate="50/m", method="GET", block=True)
+@api_view(["GET"])
+def autocomplete_search(request):
+    """
+    Returns 
+    """
+    print(" ========== AUTOCOMPLETE SEARCH ========== ")
+    try:
+        query = request.GET.get("q", "")
+        commander_only  = request.GET.get("commander", "false")
+        print(f"query: {query}, commander_only: {commander_only}")
+        cards: list[str] = ScryFallEngine().autocomplete(query)
+
+        filtered_cards = []
+        if commander_only == "true":
+            for card_name in cards:
+                print(f"card_name: {card_name}")
+                card: Card = ScryFallEngine.validate_commander(card_name)
+                if card != None:
+                    filtered_cards.append(card_name)
+        else:
+            filtered_cards = cards
+        return Response(filtered_cards, status = 200)
+    except Exception as e:
+        return Response({"error getting autocomplete suggestions": str(e)}, status = 400)
+
 # =========================================== USER ROUTES  =========================================== #
+@ratelimit(key="ip", rate="50/m", method="GET", block=True)
 @api_view(["GET"])
 def get_user_decks(request):
     """
@@ -124,25 +168,24 @@ def get_user_decks(request):
     decks = []
     engine = ScryFallEngine()
     for decklist in user_decks:
+        deck_name = decklist[1]
+        deck_id = decklist[2]
+        
         deck = {
-            'deckName': decklist[1],
-            'deckType': decklist[0],
-            'deckID': decklist[2],
-            'userId': decklist[4],
-            'commander': decklist[3]
+            'name': deck_name,
+            'id': deck_id,
         }
         
-        if deck['deckType'] == 'Commander':
-            imageLinks = engine.get_image_links(deck['commander'])
-            deck['commanderImage'] = imageLinks['normal']
-        del deck['deckType']
-        del deck['userId']
-        del deck["commander"]
-
+        if decklist[0] == 'commander':
+            deck_commander = decklist[3]    
+            imageLinks = engine.get_image_links(deck_commander)
+            deck['image_url'] = imageLinks['art_crop']
+        print(deck)
         decks.append(deck)
         
     return Response({ 'message': 'success', 'status': '200', 'decks': decks}, status = 200)
 
+@ratelimit(key="ip", rate="30/m", method="GET", block=True)
 @api_view(["GET"])
 def get_deck(request):
     """
@@ -192,7 +235,7 @@ def get_deck(request):
 
     return Response({"deck" : response}, status = status.HTTP_200_OK)
 
-
+@ratelimit(key="ip", rate="30/m", method="POST", block=True)
 @api_view(["PATCH"])
 def update_deck(request):
     """
@@ -256,7 +299,7 @@ def update_deck(request):
 
 
 
-
+@ratelimit(key="ip", rate="10/m", method="POST", block=True)
 @api_view(["POST"])
 def create_new_deck(request):
     print(" ========== CREATE NEW DECK ========== ")
@@ -307,30 +350,6 @@ def create_new_deck(request):
 
 
 
-@api_view(["GET"])
-def autocomplete_search(request):
-    """
-    Returns 
-    """
-    print(" ========== AUTOCOMPLETE SEARCH ========== ")
-    try:
-        query = request.GET.get("q", "")
-        commander_only  = request.GET.get("commander", "false")
-        print(f"query: {query}, commander_only: {commander_only}")
-        cards: list[str] = ScryFallEngine().autocomplete(query)
-
-        filtered_cards = []
-        if commander_only == "true":
-            for card_name in cards:
-                print(f"card_name: {card_name}")
-                card: Card = ScryFallEngine.validate_commander(card_name)
-                if card != None:
-                    filtered_cards.append(card_name)
-        else:
-            filtered_cards = cards
-        return Response(filtered_cards, status = 200)
-    except Exception as e:
-        return Response({"error getting autocomplete suggestions": str(e)}, status = 400)
 
 
 # =========================================== TEST ROUTES  =========================================== #
@@ -356,3 +375,5 @@ def _check_auth(request) -> tuple[int, Response]:
         return user_id, None
     except Exception as e:
         return -1, Response({"Failed to Authenticate User": str(e)}, status = 401)
+
+

@@ -77,26 +77,41 @@ class ScryFallEngine:
     
     @staticmethod
     def batch_validate(card_names: list[str]) -> list[list[str],int]:
-        MAXBATCHSIZE = 75
+        MAXBATCHSIZE = 37
         scryfall_url = "https://api.scryfall.com/cards/collection"
         headers = {
             'User-Agent': 'MysticTunerApp',
             'Accept': 'application/json'
         }
         card_groups = [card_names[i:i + MAXBATCHSIZE] for i in range(0, len(card_names),MAXBATCHSIZE)]
+        print(f'Number of groups: {len(card_groups)}')
         invalidNames = []
+        potentialInvalidNames = []
         for group in card_groups:
+            print(f'Group: {group}')
             data = {
                 'identifiers': []
             }
-            for card in card_names:
-                data['identifiers'].append({"name": card})
+            for card in group:
+                if "/" in card:
+                    potentialInvalidNames.append(card)
+                    split_card = card.split("/")
+                    data['identifiers'].append({"name": split_card[0]})
+                    data['identifiers'].append({"name": split_card[len(split_card)-1]})
+                else:
+                    data['identifiers'].append({"name": card})
+            print(f'Data: {data}')
             response = requests.post(scryfall_url, json=data, headers=headers)
             response_data = response.json()
             if response_data["not_found"] != []:
                 for dict in response_data["not_found"]:
                     invalidNames.append(dict["name"])
         if invalidNames != []:
+            for name in invalidNames:
+                for match in potentialInvalidNames:
+                    if match.find(name) != -1:
+                        invalidNames.remove(name)
+                        invalidNames.append(match)
             return invalidNames,0
         else:
             return invalidNames,1
