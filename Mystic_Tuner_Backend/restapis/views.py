@@ -75,7 +75,6 @@ def suggestions(request):
         "issues":["Not enough cards to remove. Please add more cards to the deck."]
     }
     """
-    return Response({"error": "This endpoint is not implemented yet."}, status = 200)
     try:
         CardSuggestionController.validate_request(request.data)
         print("Request validated.")
