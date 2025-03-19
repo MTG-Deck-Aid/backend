@@ -90,6 +90,8 @@ class ScryFallEngine:
                 'identifiers': []
             }
             for card in card_names:
+                if "/" in card:
+                    card = card.split("/")[0]
                 data['identifiers'].append({"name": card})
             response = requests.post(scryfall_url, json=data, headers=headers)
             response_data = response.json()
