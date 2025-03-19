@@ -54,7 +54,7 @@ def get_image_links(request):
     except Exception as e:
         return Response({"error getting image links": str(e)}, status = 400)
 
-@ratelimit(key="ip", rate="3/m", method="POST", block=True)
+@ratelimit(key="header:x-real-ip", rate="3/m", method="POST", block=True)
 @api_view(["POST"])
 def suggestions(request):
     """
