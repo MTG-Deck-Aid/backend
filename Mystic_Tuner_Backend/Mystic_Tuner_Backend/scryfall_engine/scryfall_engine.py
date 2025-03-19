@@ -77,7 +77,7 @@ class ScryFallEngine:
     
     @staticmethod
     def batch_validate(card_names: list[str]) -> list[list[str],int]:
-        MAXBATCHSIZE = 75
+        MAXBATCHSIZE = 37
         scryfall_url = "https://api.scryfall.com/cards/collection"
         headers = {
             'User-Agent': 'MysticTunerApp',
@@ -93,8 +93,11 @@ class ScryFallEngine:
             for card in card_names:
                 if "/" in card:
                     potentialInvalidNames.append(card)
-                    card = card.split("/")[0]
-                data['identifiers'].append({"name": card})
+                    split_card = card.split("/")
+                    data['identifiers'].append({"name": split_card[0]})
+                    data['identifiers'].append({"name": split_card[len(split_card)-1]})
+                else:
+                    data['identifiers'].append({"name"})
             response = requests.post(scryfall_url, json=data, headers=headers)
             response_data = response.json()
             if response_data["not_found"] != []:
