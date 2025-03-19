@@ -31,12 +31,14 @@ def verify_cards(request):
     try:
         data = request.data
         cardList = data.get("names",[])
+        print(f"cardList: {cardList}")
         response_data,all_cards_found = ScryFallEngine.batch_validate(cardList)
         if all_cards_found == 1:
             return Response(status = 200)
         else:
             return Response({"invalidNames" : response_data}, status = 422)
     except Exception as e:
+        print(f"Error: {e}")
         return Response({"error verifying card names": str(e)}, status = 400)
 
 @ratelimit(key="ip", rate="50/m", method="GET", block=True)

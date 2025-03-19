@@ -84,9 +84,11 @@ class ScryFallEngine:
             'Accept': 'application/json'
         }
         card_groups = [card_names[i:i + MAXBATCHSIZE] for i in range(0, len(card_names),MAXBATCHSIZE)]
+        print(f'Number of groups: {len(card_groups)}')
         invalidNames = []
         potentialInvalidNames = []
         for group in card_groups:
+            print(f'Group: {group}')
             data = {
                 'identifiers': []
             }
@@ -97,7 +99,8 @@ class ScryFallEngine:
                     data['identifiers'].append({"name": split_card[0]})
                     data['identifiers'].append({"name": split_card[len(split_card)-1]})
                 else:
-                    data['identifiers'].append({"name"})
+                    data['identifiers'].append({"name": card})
+            print(f'Data: {data}')
             response = requests.post(scryfall_url, json=data, headers=headers)
             response_data = response.json()
             if response_data["not_found"] != []:
