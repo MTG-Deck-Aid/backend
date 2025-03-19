@@ -89,7 +89,7 @@ class ScryFallEngine:
             data = {
                 'identifiers': []
             }
-            for card in card_names:
+            for card in group:
                 data['identifiers'].append({"name": card})
             response = requests.post(scryfall_url, json=data, headers=headers)
             response_data = response.json()
