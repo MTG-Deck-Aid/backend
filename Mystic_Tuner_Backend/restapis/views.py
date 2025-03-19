@@ -148,7 +148,7 @@ def autocomplete_search(request):
         return Response({"error getting autocomplete suggestions": str(e)}, status = 400)
 
 # =========================================== USER ROUTES  =========================================== #
-@ratelimit(key="ip", rate="30/m", method="GET", block=True)
+@ratelimit(key="ip", rate="50/m", method="GET", block=True)
 @api_view(["GET"])
 def get_user_decks(request):
     """
@@ -168,21 +168,19 @@ def get_user_decks(request):
     decks = []
     engine = ScryFallEngine()
     for decklist in user_decks:
+        deck_name = decklist[1]
+        deck_id = decklist[2]
+        
         deck = {
-            'deckName': decklist[1],
-            'deckType': decklist[0],
-            'deckID': decklist[2],
-            'userId': decklist[4],
-            'commander': decklist[3]
+            'name': deck_name,
+            'id': deck_id,
         }
         
-        if deck['deckType'] == 'Commander':
-            imageLinks = engine.get_image_links(deck['commander'])
-            deck['commanderImage'] = imageLinks['normal']
-        del deck['deckType']
-        del deck['userId']
-        del deck["commander"]
-
+        if decklist[0] == 'commander':
+            deck_commander = decklist[3]    
+            imageLinks = engine.get_image_links(deck_commander)
+            deck['image_url'] = imageLinks['art_crop']
+        print(deck)
         decks.append(deck)
         
     return Response({ 'message': 'success', 'status': '200', 'decks': decks}, status = 200)
