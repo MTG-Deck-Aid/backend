@@ -64,7 +64,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "corsheaders.middleware.CorsMiddleware",
+    'django_ratelimit.middleware.RatelimitMiddleware',
 ]
+
+RATELIMIT_VIEW = 'restapis.views.ratelimited_error'
 
 CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", "").split(",") # For Dev add to .env CORS_ALLOWED_ORIGINS="http://localhost:3000"
 
