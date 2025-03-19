@@ -85,12 +85,14 @@ class ScryFallEngine:
         }
         card_groups = [card_names[i:i + MAXBATCHSIZE] for i in range(0, len(card_names),MAXBATCHSIZE)]
         invalidNames = []
+        potentialInvalidNames = []
         for group in card_groups:
             data = {
                 'identifiers': []
             }
             for card in card_names:
                 if "/" in card:
+                    potentialInvalidNames.append(card)
                     card = card.split("/")[0]
                 data['identifiers'].append({"name": card})
             response = requests.post(scryfall_url, json=data, headers=headers)
@@ -99,6 +101,11 @@ class ScryFallEngine:
                 for dict in response_data["not_found"]:
                     invalidNames.append(dict["name"])
         if invalidNames != []:
+            for name in invalidNames:
+                for match in potentialInvalidNames:
+                    if match.find(name) != -1:
+                        invalidNames.remove(name)
+                        invalidNames.append(match)
             return invalidNames,0
         else:
             return invalidNames,1
