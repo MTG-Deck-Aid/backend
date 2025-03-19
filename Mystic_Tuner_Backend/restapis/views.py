@@ -16,7 +16,7 @@ from Mystic_Tuner_Backend.deck_suggestions.deck_suggestion_controller import Car
 from Mystic_Tuner_Backend.security.security_controller import SecurityController
 
 # =========================================== NON-USER ROUTES  =========================================== #
-@api_view(["GET"])
+@api_view(["GET","POST", "PUT", "DELETE", "PATCH"])
 def ratelimited_error(request, exception):
     """
     How to return a 429 error when the user is ratelimited. (Default is 403 which is the wrong status code)

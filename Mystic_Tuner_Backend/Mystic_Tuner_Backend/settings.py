@@ -64,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "corsheaders.middleware.CorsMiddleware",
+    "restapis.middleware.ReverseProxyMiddleware",
     'django_ratelimit.middleware.RatelimitMiddleware',
 ]
 
