@@ -16,7 +16,7 @@ from Mystic_Tuner_Backend.deck_suggestions.deck_suggestion_controller import Car
 from Mystic_Tuner_Backend.security.security_controller import SecurityController
 
 # =========================================== NON-USER ROUTES  =========================================== #
-@api_view(["GET"])
+@api_view(["GET","POST", "PUT", "DELETE", "PATCH"])
 def ratelimited_error(request, exception):
     """
     How to return a 429 error when the user is ratelimited. (Default is 403 which is the wrong status code)
@@ -54,7 +54,7 @@ def get_image_links(request):
     except Exception as e:
         return Response({"error getting image links": str(e)}, status = 400)
 
-@ratelimit(key="header:x-real-ip", rate="3/m", method="POST", block=True)
+@ratelimit(key="ip", rate="3/m", method="POST", block=True)
 @api_view(["POST"])
 def suggestions(request):
     """
@@ -75,6 +75,7 @@ def suggestions(request):
         "issues":["Not enough cards to remove. Please add more cards to the deck."]
     }
     """
+    return Response({"error": "This endpoint is not implemented yet."}, status = 200)
     try:
         CardSuggestionController.validate_request(request.data)
         print("Request validated.")
