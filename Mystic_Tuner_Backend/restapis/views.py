@@ -208,32 +208,41 @@ def get_deck(request):
 
     deck_queries = DeckQueries()
     card_list: list[tuple] = deck_queries.get_deck(deck_id)
-    user_decks = deck_queries.get_user_decks(user_id)
+    user_decks: list[tuple] = deck_queries.get_user_decks(user_id)
     print(f"card_list: {card_list}")
     print(f"user_decks: {user_decks}")
     if card_list == None or user_decks == None:
         return Response({"Error" : "couldn't retrieve data"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # Same deck id, and belongs to the user id
-    deck: tuple = None
+    the_deck:dict = None
+    # Check that the deck belongs to the user, and that the deck id is correct
     for usr_deck in user_decks:
-        usr_deck_id = usr_deck[2]
-        usr_deck_user_id = usr_deck[4]
+        usr_deck_user_id: int = usr_deck[4]
+        usr_deck_id:int = usr_deck[2]
         if ((usr_deck_id == deck_id) and (usr_deck_user_id == user_id)):
-            deck = usr_deck
+            game_type: str = usr_deck[0]
+            deck_name: str = usr_deck[1]
+            commander: str = None
+            if game_type == "commander":
+                commander = usr_deck[3]
+            the_deck = {
+                "game_type": game_type,
+                "deck_name": deck_name,
+                "deck_id": usr_deck_id,
+                "commander": commander
+            }
             break
-    if deck == None:
+
+    if the_deck == None:
         return Response({"Error" : "Deck not found"}, status = status.HTTP_404_NOT_FOUND)
 
-    response = []
+    cards = []
     for card in card_list:
-        is_commander = card[2] == deck[3]
-        if is_commander:
-            response.append({'commander' : card[2]})
-        else:
-            response.append({'name':card[2], 'quantity': card[5], 'sideboard': card[3], 'cardtype': card[4]})# Currently only name and quantity are supported
-
-    return Response({"deck" : response}, status = status.HTTP_200_OK)
+        cards.append({'name':card[2], 'quantity': card[5], 'sideboard': card[3], 'cardtype': card[4]})# Currently only name and quantity are supported
+    the_deck['cards'] = cards
+    print(f"response: {cards}")  
+    return Response({"deck" : the_deck}, status = status.HTTP_200_OK)
 
 @ratelimit(key="ip", rate="30/m", method="POST", block=True)
 @api_view(["PATCH"])
