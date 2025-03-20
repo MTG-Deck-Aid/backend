@@ -44,7 +44,44 @@ def test_get_commander(setup_and_teardown):
 def test_get_user_decks(setup_and_teardown):
     backend_URL = setup_and_teardown
     data = {
-        "user_id": 1
-    }
-    response = requests.post(backend_URL + "decks/user-decks", json=data)
+  "num_to_add": 1,
+  "num_to_remove": 2,
+  "decklist": {
+    "commander": "Marchesha The Black Rose",
+    "mainboard": [
+      {
+        "name": "Ashnod's Al",
+        "quantity": 1
+      },
+      {
+        "name": "Demonic Tut",
+        "quantity": 1
+      },
+      {
+        "name": "Counterspell",
+        "quantity": 1
+      },
+      {
+        "name": "Sol Ring",
+        "quantity": 1
+      },
+      {
+        "name": "Swamp",
+        "quantity": 9
+      },
+      {
+        "name": "Island",
+        "quantity": 9
+      },
+      {
+        "name": "Mountain",
+        "quantity": 12
+      }
+    ]
+  }
+}
+
+    response = requests.post(backend_URL + "suggestions/", json=data)
     assert response.status_code == 200
+
+
