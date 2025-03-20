@@ -34,7 +34,7 @@ def verify_cards(request):
         print(f"cardList: {cardList}")
         response_data,all_cards_found = ScryFallEngine.batch_validate(cardList)
         if all_cards_found == 1:
-            return Response(status = 200)
+            return Response({"invalidNames" : []}, status = 200)
         else:
             return Response({"invalidNames" : response_data}, status = 422)
     except Exception as e:
