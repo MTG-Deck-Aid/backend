@@ -100,12 +100,14 @@ class ScryFallEngine:
         returns:
            list[list[str],int] - list of card names that were invalid and bool indicating wether or not all cards were validated.
         """
+        #ensure that limit of 75 can never be surpassed
         MAXBATCHSIZE = 37
         scryfall_url = "https://api.scryfall.com/cards/collection"
         headers = {
             'User-Agent': 'MysticTunerApp',
             'Accept': 'application/json'
         }
+        #break cards up into groups of 37
         card_groups = [card_names[i:i + MAXBATCHSIZE] for i in range(0, len(card_names),MAXBATCHSIZE)]
         invalidNames = []
         potentialInvalidNames = []
@@ -113,6 +115,7 @@ class ScryFallEngine:
             data = {
                 'identifiers': []
             }
+            #break up any double cards into their two respsctive halves and format dict correctly
             for card in group:
                 if "/" in card:
                     potentialInvalidNames.append(card)
@@ -121,12 +124,15 @@ class ScryFallEngine:
                     data['identifiers'].append({"name": split_card[len(split_card)-1]})
                 else:
                     data['identifiers'].append({"name": card})
+            #fetch card data for group of cards
             response = requests.post(scryfall_url, json=data, headers=headers)
             response_data = response.json()
+            #format returned dict
             if response_data["not_found"] != []:
                 for dict in response_data["not_found"]:
                     invalidNames.append(dict["name"])
         if invalidNames != []:
+            #return any split double cards to their original state
             for name in invalidNames:
                 for match in potentialInvalidNames:
                     if match.find(name) != -1:
@@ -138,19 +144,23 @@ class ScryFallEngine:
 
     @staticmethod
     def validate_commander(card_name: str) -> Card:
+        #ensure a card name is passed
         if not card_name:
             return None
+        #alter name to ensure http request compatability
         uriName = encodeURIName(card_name)
         scryfall_url = f"https://api.scryfall.com/cards/named?fuzzy={uriName}"
         headers = {
             'User-Agent': 'MysticTunerApp',
             'Accept': 'application/json'
         }
+        #fetch card info
         response = requests.get(scryfall_url, headers=headers)
         card_data = response.json()
         if response.status_code != 200:
             print("Error: Commander Card not found")
             return None
+        #ensure requested card is a legal commander card
         if card_data['legalities']['commander'] != 'legal':
             return None
         if ("Legendary Creature" not in card_data['type_line']) and ("can be your commander" not in card_data['oracle_text']):
@@ -159,8 +169,6 @@ class ScryFallEngine:
         if multisided and len(multisided) > 1:
             return None
         else:
-            if card_data['name'] == "Invasion of Fiora // Marchesa, Resolute Monarch":
-                print(card_data)
             return Card.from_json(card_data)
         
     @staticmethod
@@ -168,29 +176,19 @@ class ScryFallEngine:
         """
         Search for potential cards
         """
-
+        #ensure a cardname is provided
         if not card_name:
             return []
+        #encode name to ensiure it is in valid http format
         uriName = encodeURIName(card_name)
         scryfall_url = f"https://api.scryfall.com/cards/autocomplete?q={uriName}"
         headers = {
             'User-Agent': 'MysticTunerApp',
             'Accept': 'application/json'
         }
+        #request autocomplete suggestions
         response = requests.get(scryfall_url, headers=headers)
         card_list: list[str] = response.json()["data"]
         if response.status_code != 200:
             return None
         return card_list
-    
-
-
-    
-    
-if __name__ == "__main__":
-    # Example Usage
-    engine = ScryFallEngine()
-    card = engine.search_card('Black Lotus')
-    print(card.__str__())
-    
-        
