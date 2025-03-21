@@ -58,14 +58,12 @@ class TestAllButtons():
     self.ids['login'] = "//span[contains(text(), 'Login')]"
     self.ids['loginMethod'] = By.XPATH
 
-    
+    self.ids['logo'] = "//img[@alt='Mystic Tuner logo']"
+    self.ids['logoMethod'] = By.XPATH
 
   def test_identify_buttons(self):
     driver = self.driver
-    time.sleep(1)
-    driver.find_element(self.ids['accountDropDownMethod'], self.ids['accountDropDown']).click()
-    time.sleep(1)
-    driver.find_element(self.ids['loginMethod'], self.ids['login'])
+
 
     driver.find_element(self.ids['newDeckMethod'], self.ids['newDeck']).click()
     time.sleep(1)
@@ -86,15 +84,25 @@ class TestAllButtons():
 
   #TC-FR01
   def test_home(self):
-    pass
+    driver = self.driver
+    driver.find_element(self.ids['logoMethod'], self.ids['logo'])
 
   #TC-FR02
   def test_return_to_home(self):
-    pass
+    driver = self.driver
+    driver.find_element(self.ids['newDeckMethod'], self.ids['newDeck']).click()
+    time.sleep(1)
+    driver.find_element(self.ids['homeMethod'], self.ids['home']).click()
+    driver.find_element(self.ids['logoMethod'], self.ids['logo'])
+
 
   #TC-FR03
   def test_login(self):
-    pass
+    driver = self.driver
+    time.sleep(1)
+    driver.find_element(self.ids['accountDropDownMethod'], self.ids['accountDropDown']).click()
+    time.sleep(1)
+    driver.find_element(self.ids['loginMethod'], self.ids['login'])
 
   #TC-FR04
   def test_search_for_valid_commander(self):
