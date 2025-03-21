@@ -285,12 +285,12 @@ def delete_deck(request):
 def update_deck(request):
     """
     Updates the entire deck with the new decklist
-
+    http://localhost:8000/api/decks/update/
     request.data = {
-        "deck_id": 1,
-        "deck_name": "new deck name",
+        "deckId": 1,
+        "deckName": "new deck name",
         "commander": "new commander name"
-        "decklist": [
+        "deckList": [
             {
                 "name": "cardname",
                 "quantity": 3
@@ -298,24 +298,28 @@ def update_deck(request):
         ]
     }
     """
-    return Response({"error": "This route is not implemented yet"}, status = 501)
     print(" ========== UPDATE DECK BY DECK ID & USER ID ========== ")
+    # Validate user input
     try:
-        deck_id = int(request.data.get("deck_id", None))
-        deck_name = request.data.get("deck_name", None)
+        deck_id = int(request.data.get("deckId", None))
+        deck_name = request.data.get("deckName", None)
         commander = request.data.get("commander", None)
-        decklist: list[dict] = request.data.get("decklist", None)
-    except Exception as e:
-        return Response({"error": "deck_id must be an integer"}, status = 400)
+        decklist: list[dict] = request.data.get("deckList", None)
+        print(f"deck_id: {deck_id}, deck_name: {deck_name}, commander: {commander}, decklist: {decklist}")
 
+        if(deck_id == None or deck_name == None or commander == None or decklist == None):
+            return Response({"Please provide all the deck information"}, status = status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({"error": "deck_id must be an integer"}, status = status.HTTP_400_BAD_REQUEST)
+
+    # Validate user is authenticated
     user_id, invalid_response =  _check_auth(request)
     if invalid_response != None:
         return invalid_response
 
-    if(deck_id == None or deck_name == None or commander == None or decklist == None):
-        return Response({"Please provide all the deck information"}, status = status.HTTP_400_BAD_REQUEST)
 
     deck_queries = DeckQueries()
+    card_queries = CardQueries()
     user_decks = deck_queries.get_user_decks(user_id)
     if user_decks == None:
         return Response({"Error" : "couldn't retrieve data"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -324,12 +328,21 @@ def update_deck(request):
     for usr_deck in user_decks:
         usr_deck_user_id: int = usr_deck[4]
         usr_deck_id:int = usr_deck[2]
-        if ((usr_deck_id == deck_id) and (usr_deck_user_id == user_id)):
+        found_the_deck = (usr_deck_id == deck_id) and (usr_deck_user_id == user_id)
+        if (found_the_deck):
             deck_queries.update_deck(user_id, usr_deck[0], deck_name, deck_id, commander)
+            # Get the current deck list from the database
+            current_deck_list: list[tuple] = deck_queries.get_deck(deck_id)
+            
+            # Remove the current deck list from the database
+            for card in current_deck_list:
+                card_queries.delete_cards_from_deck([card[2]], deck_id)
+                
+            # Add the new deck list to the database
+            for card in decklist:
+                card_queries.add_cards_to_deck([{'cardname': card['cardName'], 'sideboard': False, 'cardtype': None, 'count': card['quantity']}], deck_id)
             return Response({"message": "Successfully updated deck"}, status = 200)
         
-    # TODO Remove the current deck list from the database
-    # TODO Add the new deck list to the database
     return Response({"Error" : "Deck not found"}, status = status.HTTP_404_NOT_FOUND)
 
 
