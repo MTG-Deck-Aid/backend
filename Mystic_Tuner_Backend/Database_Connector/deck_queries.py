@@ -72,7 +72,7 @@ class DeckQueries():
         return self.connection.execute_query(query, params, False)
 
     #DELETE
-    def delete_deck(self, user_id, deck_name):
+    def delete_deck(self, user_id, DID):
         """
         args:
             user_id (String) - user id
@@ -82,7 +82,7 @@ class DeckQueries():
 
         All asociated cards with the deleted deck are deleted as well
         """
-        query = "DELETE FROM \"deck\" WHERE \"userId\" = %s AND \"deckName\" = %s;"
-        params = (user_id, deck_name)
+        query = "DELETE FROM \"deck\" WHERE \"userId\" = %s AND \"DID\" = %s;"
+        params = (user_id, DID)
 
         return self.connection.execute_query(query, params, False)
