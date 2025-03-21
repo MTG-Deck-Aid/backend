@@ -368,7 +368,7 @@ def add_remove_cards(request):
             }
         ]
     """
-    print(" ========== UPDATE DECK ========== ")
+    print(" ========== UPDATE CARDS IN A DECK ========== ")
     data: dict = request.data
     deck_id: int = data.get("deck_id", None)
     if deck_id == None:
@@ -405,7 +405,7 @@ def add_remove_cards(request):
         cardQueries.add_cards_to_deck(cards_added, deck_id)
 
     if cards_removed != None:
-        cardQueries.remove_cards_from_deck(cards_removed, deck_id) # TODO fix remove cards from deck
+        cardQueries.remove_cards_from_deck(cards_removed, deck_id)
     return Response({"message": "Successfully updated deck"}, status = 200)
 
 
@@ -417,13 +417,13 @@ def add_remove_cards(request):
 @api_view(["POST"])
 def create_new_deck(request):
     print(" ========== CREATE NEW DECK ========== ")
-    deck = request.data
-    print(f"deck: {deck}")
-    commander = deck['commander']
-    deck_name = deck['deckName']
+    data = request.data
+    print(f"frontend data: {data}")
+    deck_name = data['deckName']
+    commander = data['commander']
+    cards = data['deckList']
     
     user_id = SecurityController().get_user_id(request.headers.get("Authorization").split(" ")[1])
-    cards = json.loads(deck['deckList'])
 
     deck_queries = DeckQueries()
 
@@ -433,8 +433,8 @@ def create_new_deck(request):
         return Response({'error' : 'Deck name already exists'}, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
 
     decks = deck_queries.get_user_decks(user_id)
-    deck = None
 
+    deck = None
     for item in decks:
         if item[1] == deck_name:
             deck = item
@@ -446,14 +446,14 @@ def create_new_deck(request):
 
     formatted_list = []
     for card in cards:
-        formatted_list.append({'cardname': card['name'], 'sideboard': False, 'cardtype': None, 'count': card['quantity']})
+        formatted_list.append({'cardname': card['cardName'], 'sideboard': False, 'cardtype': None, 'count': card['quantity']})
     
-    print(f"cards to add: {formatted_list}")
+    print(f"Adding cards to {deck_name}: {formatted_list}")
 
     card_queries = CardQueries()
 
     result = card_queries.add_cards_to_deck(formatted_list, deck[2])
-    print(f"result: {result}")
+    print(f"Adding cards result: {result}")
 
     if result == False:
         deck_queries.delete_deck(user_id, deck_name)
