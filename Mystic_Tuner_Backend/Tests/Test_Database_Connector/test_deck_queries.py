@@ -70,6 +70,8 @@ def setup_and_teardown():
 #
 #CREATE TESTS
 #
+
+#TC-DQ01
 def test_create_deck(setup_and_teardown):
     query_generator = DeckQueries()
 
@@ -88,6 +90,7 @@ def test_create_deck(setup_and_teardown):
     
     assert correct == True
 
+#TC-DQ02
 def test_create_deck_none_name(setup_and_teardown):
     query_generator = DeckQueries()
 
@@ -97,6 +100,7 @@ def test_create_deck_none_name(setup_and_teardown):
 
     assert result == False
 
+#TC-DQ03
 def test_create_deck_none_type(setup_and_teardown):
     query_generator = DeckQueries()
 
@@ -106,6 +110,7 @@ def test_create_deck_none_type(setup_and_teardown):
 
     assert result == False
 
+#TC-DQ04
 def test_create_deck_none_user(setup_and_teardown):
     query_generator = DeckQueries()
 
@@ -115,6 +120,7 @@ def test_create_deck_none_user(setup_and_teardown):
 
     assert result == False
 
+#TC-DQ05
 def test_create_existing_deck(setup_and_teardown):
     query_generator = DeckQueries()
 
@@ -127,6 +133,8 @@ def test_create_existing_deck(setup_and_teardown):
 #
 #READ TESTS
 #
+
+#TC-DQ06
 def test_get_all_user_decks(setup_and_teardown):
     query_generator = DeckQueries()
 
@@ -145,18 +153,21 @@ def test_get_all_user_decks(setup_and_teardown):
                 break
         assert correct == True
 
+#TC-DQ07
 def test_get_all_user_decks_none_user(setup_and_teardown):
     query_generator = DeckQueries()
     decks = query_generator.get_user_decks("-1")
 
     assert len(decks) == 0
 
+#TC-DQ08
 def test_get_deck(setup_and_teardown):
     query_generator = DeckQueries()
     deck = query_generator.get_deck(setup_and_teardown)
 
     assert len(deck) == 4
 
+#TC-DQ09
 def test_get_empty_deck(setup_and_teardown):
     query_generator = DeckQueries()
     deck = query_generator.get_deck(setup_and_teardown + 1)
@@ -166,6 +177,7 @@ def test_get_empty_deck(setup_and_teardown):
 #UPDATE TESTS
 #
 
+#TC-DQ10
 def test_update_deck(setup_and_teardown):
     query_generator = DeckQueries()
 
@@ -181,6 +193,7 @@ def test_update_deck(setup_and_teardown):
 
     assert decks[0][3] == None
 
+#TC-DQ11
 def test_update_deck_invalid_user(setup_and_teardown):
     query_generator = DeckQueries()
     
@@ -188,6 +201,7 @@ def test_update_deck_invalid_user(setup_and_teardown):
 
     assert result == False
 
+#TC-DQ12
 def test_update_deck_invalid_type(setup_and_teardown):
     query_generator = DeckQueries()
     
@@ -195,6 +209,7 @@ def test_update_deck_invalid_type(setup_and_teardown):
 
     assert result == False
 
+#TC-DQ13
 def test_update_deck_invalid_name(setup_and_teardown):
     query_generator = DeckQueries()
     
@@ -205,6 +220,7 @@ def test_update_deck_invalid_name(setup_and_teardown):
 #DELETE TESTS
 #
 
+#TC-DQ14
 def test_delete_deck(setup_and_teardown):
     query_generator = DeckQueries()
 
@@ -224,6 +240,7 @@ def test_delete_deck(setup_and_teardown):
     assert correct == True
 
 
+#TC-DQ15
 def test_delete_nonexistant_deck(setup_and_teardown):
     query_generator = DeckQueries()
 
@@ -231,6 +248,7 @@ def test_delete_nonexistant_deck(setup_and_teardown):
 
     assert rows_affected == 0
 
+#TC-DQ16
 def test_delete_deck_wrong_user(setup_and_teardown):
     query_generator = DeckQueries()
 

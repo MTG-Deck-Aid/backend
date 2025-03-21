@@ -57,7 +57,7 @@ def setup_and_teardown():
     }
     yield decklist
     
-
+#TC-CS01
 def test_validate_request(setup_and_teardown):
     """
     Tests the validation of the request from the frontend.
@@ -76,6 +76,7 @@ def test_validate_request(setup_and_teardown):
             }
         })
 
+#TC-CS02
 def test_add_suggestions(setup_and_teardown):
     """
     Tests the creation of a new card suggestion.
@@ -107,6 +108,7 @@ def test_add_suggestions(setup_and_teardown):
         
 
 
+#TC-CS03
 def test_remove_suggestions_invalid_card_amount(setup_and_teardown):
     """
     Tests the removal of a card suggestion.
@@ -132,6 +134,7 @@ def test_remove_suggestions_invalid_card_amount(setup_and_teardown):
     })
     assert len(suggestions["issues"]) > 0
 
+#TC-CS04
 def test_remove_suggestions_valid_card_amount(setup_and_teardown):
     """
     Tests the removal of a card suggestion.
@@ -146,6 +149,7 @@ def test_remove_suggestions_valid_card_amount(setup_and_teardown):
     assert True
 
 
+#TC-CS05
 def test_reason_present(setup_and_teardown):
     """
     Tests the presence of a reason in the card suggestion.
@@ -156,6 +160,7 @@ def test_reason_present(setup_and_teardown):
     for suggestion in suggestions["cards_to_remove"]:
         assert suggestion["reason"] != ""
 
+#TC-CS06
 def test_image_present(setup_and_teardown):
     """
     Tests the presence of an image in the card suggestion.
