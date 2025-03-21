@@ -20,7 +20,7 @@ urlpatterns = [
     path('decks/add_remove_cards/', add_remove_cards),
     path('decks/user-decks', get_user_decks),
     path('decks/get-image-links', get_image_links, name="get_image_links"),
-    path('decks/verify-cards/', verify_cards, name="verify_cards"),
+    #path('decks/verify-cards/', verify_cards, name="verify_cards"),
     path("decks/autocomplete/", autocomplete_search, name="autocomplete_search"),
 
     # Suggestions
