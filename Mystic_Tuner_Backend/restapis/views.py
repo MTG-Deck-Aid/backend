@@ -251,13 +251,13 @@ def delete_deck(request):
     """
     Deletes the deck from the database
 
-    https://localhost:8000/api/decks/delete/?deck_id=1
+    https://localhost:8000/api/decks/delete/?deckId=1
     """
     print(" ========== DELETE DECK BY DECK ID & USER ID ========== ")
     try:
-        deck_id = int(request.GET.get("deck_id", None))
+        deck_id = int(request.GET.get("deckId", None))
     except Exception as e:
-        return Response({"error": "deck_id must be an integer"}, status = 400)
+        return Response({"error": "deckId must be an integer"}, status = 400)
 
     user_id, invalid_response =  _check_auth(request)
     if invalid_response != None:
