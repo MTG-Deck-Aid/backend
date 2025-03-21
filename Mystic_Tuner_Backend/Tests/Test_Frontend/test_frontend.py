@@ -95,7 +95,6 @@ class TestAllButtons():
     driver.find_element(self.ids['homeMethod'], self.ids['home']).click()
     driver.find_element(self.ids['logoMethod'], self.ids['logo'])
 
-
   #TC-FR03
   def test_login(self):
     driver = self.driver
