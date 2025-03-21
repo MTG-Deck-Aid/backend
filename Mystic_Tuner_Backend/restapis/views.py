@@ -28,6 +28,12 @@ def ratelimited_error(request, exception):
 @ratelimit(key="ip", rate="50/m", method="POST", block=True)
 @api_view(["POST"])
 def verify_cards(request):
+    """
+    Params:
+        List of strings representing a user deck
+    Returns:
+        List of strings containing any invalid names from the provided list
+    """
     try:
         data = request.data
         cardList = data.get("names",[])
@@ -44,6 +50,12 @@ def verify_cards(request):
 @ratelimit(key="ip", rate="50/m", method="GET", block=True)
 @api_view(["GET"])
 def get_image_links(request):
+    """
+    Params:
+        singular card name
+    Returns:
+        dict of image links associated with the card provided
+    """
     try:
         card_name = request.data.get("name")
         if not card_name:
@@ -109,6 +121,12 @@ def suggestions(request):
 @ratelimit(key="ip", rate="50/m", method="POST", block=True)
 @api_view(["POST"])
 def get_commander(request):
+    """
+    Params:
+        name of a single commander
+    Returns:
+        dict with card data associated with the requested commander
+    """
     print(" ========== GET COMMANDER ========== ")
     try:
         commander = request.data.get('commander')
