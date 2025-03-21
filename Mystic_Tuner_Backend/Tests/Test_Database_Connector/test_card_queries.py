@@ -2,7 +2,6 @@ from Database_Connector.card_queries import CardQueries
 
 import pytest
 
-
 @pytest.fixture
 def setup_and_teardown():
     query_generator = CardQueries()
@@ -24,7 +23,7 @@ def setup_and_teardown():
 #
 #CREATION TESTS
 #
-
+#TC-CQ01
 def test_create_valid(setup_and_teardown):
     query_generator = CardQueries()
 
@@ -47,6 +46,7 @@ def test_create_valid(setup_and_teardown):
     
     assert found_card == True
 
+#TC-CQ02
 def test_create_none_cardtype(setup_and_teardown):
     query_generator = CardQueries()
 
@@ -63,6 +63,7 @@ def test_create_none_cardtype(setup_and_teardown):
 
     assert result[0][4] == None
 
+#TC-CQ03
 def test_create_invalid_name(setup_and_teardown):
     query_generator = CardQueries()
 
@@ -75,6 +76,7 @@ def test_create_invalid_name(setup_and_teardown):
     assert rows_affected == False
 
 
+#TC-CQ04
 def test_create_none_count(setup_and_teardown):
     query_generator = CardQueries()
 
@@ -86,6 +88,7 @@ def test_create_none_count(setup_and_teardown):
 
     assert rows_affected == False
 
+#TC-CQ05
 def test_create_negative_count(setup_and_teardown):
     query_generator = CardQueries()
 
@@ -97,6 +100,7 @@ def test_create_negative_count(setup_and_teardown):
 
     assert rows_affected == False
 
+#TC-CQ06
 def test_create_zero_count(setup_and_teardown):
     query_generator = CardQueries()
 
@@ -108,6 +112,7 @@ def test_create_zero_count(setup_and_teardown):
 
     assert rows_affected == False
 
+#TC-CQ07
 def test_add_card_update_count(setup_and_teardown):
     query_generator = CardQueries()
 
@@ -124,6 +129,7 @@ def test_add_card_update_count(setup_and_teardown):
 
     assert result[0][5] == 6    
 
+#TC-CQ08
 def test_add_new_and_existing(setup_and_teardown):
     query_generator = CardQueries()
 
@@ -148,6 +154,7 @@ def test_add_new_and_existing(setup_and_teardown):
 #READ TESTS
 #
 
+#TC-CQ09
 def test_read(setup_and_teardown):
     query_generator = CardQueries()
 
@@ -165,6 +172,7 @@ def test_read(setup_and_teardown):
 
     assert result[0][5] == 3
 
+#TC-CQ10
 def test_read_nonexistant_card(setup_and_teardown):
     query_generator = CardQueries()
 
@@ -178,6 +186,7 @@ def test_read_nonexistant_card(setup_and_teardown):
 #UPDATE TESTS
 #
 
+#TC-CQ11
 def test_update(setup_and_teardown):
     query_generator = CardQueries()
 
@@ -197,6 +206,7 @@ def test_update(setup_and_teardown):
 
     assert result[0][5] == 1
 
+#TC-CQ12
 def test_update_nonexistant_card(setup_and_teardown):
     query_generator = CardQueries()
 
@@ -204,6 +214,7 @@ def test_update_nonexistant_card(setup_and_teardown):
 
     assert result == 0
 
+#TC-CQ13
 def test_update_invalid_name(setup_and_teardown):
     query_generator = CardQueries()
 
@@ -212,6 +223,7 @@ def test_update_invalid_name(setup_and_teardown):
     assert result == 0
 
 
+#TC-CQ14
 def test_update_none_type(setup_and_teardown):
     query_generator = CardQueries()
 
@@ -219,6 +231,7 @@ def test_update_none_type(setup_and_teardown):
 
     assert result == 1
 
+#TC-CQ15
 def test_update_negative_count(setup_and_teardown):
     query_generator = CardQueries()
 
@@ -226,6 +239,7 @@ def test_update_negative_count(setup_and_teardown):
 
     assert result == False
 
+#TC-CQ16
 def test_update_zero_count(setup_and_teardown):
     query_generator = CardQueries()
 
@@ -236,6 +250,7 @@ def test_update_zero_count(setup_and_teardown):
 #DELETE TESTS
 #
 
+#TC-CQ17
 def test_delete(setup_and_teardown):
     query_generator = CardQueries()
 
@@ -247,6 +262,7 @@ def test_delete(setup_and_teardown):
 
     assert len(result) == 0
 
+#TC-CQ18
 def test_delete_nonexistant_card(setup_and_teardown):
     query_generator = CardQueries()
 
@@ -256,6 +272,7 @@ def test_delete_nonexistant_card(setup_and_teardown):
 
     assert rows_affected == 0
 
+#TC-CQ19
 def test_delete_card_wrong_deck(setup_and_teardown):
     query_generator = CardQueries()
 
@@ -277,6 +294,7 @@ def test_delete_card_wrong_deck(setup_and_teardown):
 
     assert result[0][5] == 3
 
+#TC-CQ20
 def test_remove_partial_amount(setup_and_teardown):
     query_generator = CardQueries()
 
@@ -299,6 +317,7 @@ def test_remove_partial_amount(setup_and_teardown):
 
     assert result[0][5] == 1
 
+#TC-CQ21
 def test_remove_full_amount(setup_and_teardown):
     query_generator = CardQueries()
 
@@ -313,6 +332,7 @@ def test_remove_full_amount(setup_and_teardown):
 
     assert len(result) == 0
 
+#TC-CQ22
 def test_remove_excess_amount(setup_and_teardown):
     query_generator = CardQueries()
 
@@ -327,6 +347,7 @@ def test_remove_excess_amount(setup_and_teardown):
 
     assert len(result) == 0
 
+#TC-CQ23
 def test_remove_positive_amount(setup_and_teardown):
     query_generator = CardQueries()
 
@@ -348,11 +369,3 @@ def test_remove_positive_amount(setup_and_teardown):
     assert result[0][4] == 'Creature'
 
     assert result[0][5] == 3
-
-def main():
-    test_update_invalid_name(1)
-
-if __name__ == "__main__":
-    main()
-
-

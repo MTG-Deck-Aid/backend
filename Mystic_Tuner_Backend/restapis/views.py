@@ -196,6 +196,7 @@ def get_user_decks(request):
         
         if decklist[0] == 'commander':
             deck_commander = decklist[3]    
+            print(f"deck_commander: {deck_commander}")
             imageLinks = engine.get_image_links(deck_commander)
             deck['image_url'] = imageLinks['art_crop']
         print(deck)
@@ -226,37 +227,150 @@ def get_deck(request):
 
     deck_queries = DeckQueries()
     card_list: list[tuple] = deck_queries.get_deck(deck_id)
-    user_decks = deck_queries.get_user_decks(user_id)
+    user_decks: list[tuple] = deck_queries.get_user_decks(user_id)
     print(f"card_list: {card_list}")
     print(f"user_decks: {user_decks}")
     if card_list == None or user_decks == None:
         return Response({"Error" : "couldn't retrieve data"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # Same deck id, and belongs to the user id
-    deck: tuple = None
+    the_deck:dict = None
+    # Check that the deck belongs to the user, and that the deck id is correct
     for usr_deck in user_decks:
-        usr_deck_id = usr_deck[2]
-        usr_deck_user_id = usr_deck[4]
+        usr_deck_user_id: int = usr_deck[4]
+        usr_deck_id:int = usr_deck[2]
         if ((usr_deck_id == deck_id) and (usr_deck_user_id == user_id)):
-            deck = usr_deck
+            game_type: str = usr_deck[0]
+            deck_name: str = usr_deck[1]
+            commander: str = None
+            if game_type == "commander":
+                commander = usr_deck[3]
+            the_deck = {
+                "game_type": game_type,
+                "deck_name": deck_name,
+                "deck_id": usr_deck_id,
+                "commander": commander
+            }
             break
-    if deck == None:
+
+    if the_deck == None:
         return Response({"Error" : "Deck not found"}, status = status.HTTP_404_NOT_FOUND)
 
-    response = []
+    cards = []
     for card in card_list:
-        is_commander = card[2] == deck[3]
-        if is_commander:
-            response.append({'commander' : card[2]})
-        else:
-            response.append({'name':card[2], 'quantity': card[5], 'sideboard': card[3], 'cardtype': card[4]})# Currently only name and quantity are supported
+        cards.append({'name':card[2], 'quantity': card[5], 'sideboard': card[3], 'cardtype': card[4]})# Currently only name and quantity are supported
+    the_deck['cards'] = cards
+    print(f"response: {cards}")  
+    return Response({"deck" : the_deck}, status = status.HTTP_200_OK)
 
-    return Response({"deck" : response}, status = status.HTTP_200_OK)
+@ratelimit(key="ip", rate="30/m", method="DELETE", block=True)
+@api_view(["DELETE"])
+def delete_deck(request):
+    """
+    Deletes the deck from the database
 
-@ratelimit(key="ip", rate="30/m", method="POST", block=True)
+    https://localhost:8000/api/decks/delete/?deckId=1
+    """
+    print(" ========== DELETE DECK BY DECK ID & USER ID ========== ")
+    try:
+        deck_id = int(request.GET.get("deckId", None))
+    except Exception as e:
+        return Response({"error": "deckId must be an integer"}, status = 400)
+
+    user_id, invalid_response =  _check_auth(request)
+    if invalid_response != None:
+        return invalid_response
+
+    if(deck_id == None):
+        return Response({"No Deck ID provided"}, status = status.HTTP_400_BAD_REQUEST)
+
+    deck_queries = DeckQueries()
+    user_decks = deck_queries.get_user_decks(user_id)
+    if user_decks == None:
+        return Response({"Error" : "couldn't retrieve data"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # Check that the deck belongs to the user, and that the deck id is correct
+    for usr_deck in user_decks:
+        usr_deck_user_id: int = usr_deck[4]
+        usr_deck_id:int = usr_deck[2]
+        if ((usr_deck_id == deck_id) and (usr_deck_user_id == user_id)):
+            deck_queries.delete_deck(user_id, deck_id)
+            return Response({"message": "Successfully deleted deck"}, status = 200)
+    return Response({"Error" : "Deck not found"}, status = status.HTTP_404_NOT_FOUND)
+
+@ratelimit(key="ip", rate="30/m", method="PATCH", block=True)
 @api_view(["PATCH"])
 def update_deck(request):
     """
+    Updates the entire deck with the new decklist
+    http://localhost:8000/api/decks/update/
+    request.data = {
+        "deckId": 1,
+        "deckName": "new deck name",
+        "commander": "new commander name"
+        "deckList": [
+            {
+                "name": "cardname",
+                "quantity": 3
+            }
+        ]
+    }
+    """
+    print(" ========== UPDATE DECK BY DECK ID & USER ID ========== ")
+    # Validate user input
+    try:
+        deck_id = int(request.data.get("deckId", None))
+        deck_name = request.data.get("deckName", None)
+        commander = request.data.get("commander", None)
+        decklist: list[dict] = request.data.get("deckList", None)
+        print(f"deck_id: {deck_id}, deck_name: {deck_name}, commander: {commander}, decklist: {decklist}")
+
+        if(deck_id == None or deck_name == None or commander == None or decklist == None):
+            return Response({"Please provide all the deck information"}, status = status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({"error": "deck_id must be an integer"}, status = status.HTTP_400_BAD_REQUEST)
+
+    # Validate user is authenticated
+    user_id, invalid_response =  _check_auth(request)
+    if invalid_response != None:
+        return invalid_response
+
+
+    deck_queries = DeckQueries()
+    card_queries = CardQueries()
+    user_decks = deck_queries.get_user_decks(user_id)
+    if user_decks == None:
+        return Response({"Error" : "couldn't retrieve data"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # Check that the deck belongs to the user, and that the deck id is correct
+    for usr_deck in user_decks:
+        usr_deck_user_id: int = usr_deck[4]
+        usr_deck_id:int = usr_deck[2]
+        found_the_deck = (usr_deck_id == deck_id) and (usr_deck_user_id == user_id)
+        if (found_the_deck):
+            deck_queries.update_deck(user_id, usr_deck[0], deck_name, deck_id, commander)
+            # Get the current deck list from the database
+            current_deck_list: list[tuple] = deck_queries.get_deck(deck_id)
+            
+            # Remove the current deck list from the database
+            for card in current_deck_list:
+                card_queries.delete_cards_from_deck([card[2]], deck_id)
+                
+            # Add the new deck list to the database
+            for card in decklist:
+                card_queries.add_cards_to_deck([{'cardname': card['cardName'], 'sideboard': False, 'cardtype': None, 'count': card['quantity']}], deck_id)
+            return Response({"message": "Successfully updated deck"}, status = 200)
+        
+    return Response({"Error" : "Deck not found"}, status = status.HTTP_404_NOT_FOUND)
+
+
+
+@ratelimit(key="ip", rate="30/m", method="PATCH", block=True)
+@api_view(["PATCH"])
+def add_remove_cards(request):
+    """
+    Appends and pops cards from the deck in the database
+
     request.data = {
         "deck_id": 1,
         "cardsAdded": [
@@ -272,7 +386,7 @@ def update_deck(request):
             }
         ]
     """
-    print(" ========== UPDATE DECK ========== ")
+    print(" ========== UPDATE CARDS IN A DECK ========== ")
     data: dict = request.data
     deck_id: int = data.get("deck_id", None)
     if deck_id == None:
@@ -309,7 +423,7 @@ def update_deck(request):
         cardQueries.add_cards_to_deck(cards_added, deck_id)
 
     if cards_removed != None:
-        cardQueries.remove_cards_from_deck(cards_removed, deck_id) # TODO fix remove cards from deck
+        cardQueries.remove_cards_from_deck(cards_removed, deck_id)
     return Response({"message": "Successfully updated deck"}, status = 200)
 
 
@@ -321,13 +435,13 @@ def update_deck(request):
 @api_view(["POST"])
 def create_new_deck(request):
     print(" ========== CREATE NEW DECK ========== ")
-    deck = request.data
-    print(f"deck: {deck}")
-    commander = deck['commander']
-    deck_name = deck['deckName']
+    data = request.data
+    print(f"frontend data: {data}")
+    deck_name = data['deckName']
+    commander = data['commander']
+    cards = data['deckList']
     
     user_id = SecurityController().get_user_id(request.headers.get("Authorization").split(" ")[1])
-    cards = json.loads(deck['deckList'])
 
     deck_queries = DeckQueries()
 
@@ -337,8 +451,8 @@ def create_new_deck(request):
         return Response({'error' : 'Deck name already exists'}, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
 
     decks = deck_queries.get_user_decks(user_id)
-    deck = None
 
+    deck = None
     for item in decks:
         if item[1] == deck_name:
             deck = item
@@ -350,14 +464,14 @@ def create_new_deck(request):
 
     formatted_list = []
     for card in cards:
-        formatted_list.append({'cardname': card['name'], 'sideboard': False, 'cardtype': None, 'count': card['quantity']})
+        formatted_list.append({'cardname': card['cardName'], 'sideboard': False, 'cardtype': None, 'count': card['quantity']})
     
-    print(f"cards to add: {formatted_list}")
+    print(f"Adding cards to {deck_name}: {formatted_list}")
 
     card_queries = CardQueries()
 
     result = card_queries.add_cards_to_deck(formatted_list, deck[2])
-    print(f"result: {result}")
+    print(f"Adding cards result: {result}")
 
     if result == False:
         deck_queries.delete_deck(user_id, deck_name)
