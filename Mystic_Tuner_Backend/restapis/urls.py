@@ -11,7 +11,7 @@ urlpatterns = [
     path("health-check/", lambda request: HttpResponse("Mystic Tuner Backend API - OK"), name="health-check"),
     
     # Decks 
-    path('new-deck/', create_new_deck),
+    path('decks/new-deck/', create_new_deck),
     path('decks/commander', get_commander, name="commander"),
     path('decks/verify-cards/', verify_cards, name="verify_cards"),
     path('decks/deck', get_deck),
