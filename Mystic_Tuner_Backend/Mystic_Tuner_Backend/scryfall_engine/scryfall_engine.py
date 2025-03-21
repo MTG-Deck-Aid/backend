@@ -23,27 +23,35 @@ class ScryFallEngine:
 
         params:
             card_name: str - The name of the card to search for.
+            include_image : bool - wether or not a image should be retrieved
         returns:
             dict - The card information as a dictionary.
         """
+        #ensure requests aren't sent to scryfall too frequently
         time.sleep(0.05)
+        #ensure there is a card name passed
         if not card_name:
             return None
+        #edit card name to adhere to standard uri conventions
         uriName = encodeURIName(card_name)
         scryfall_url = f"https://api.scryfall.com/cards/named?fuzzy={uriName}"
         headers = {
             'User-Agent': 'MysticTunerApp',
             'Accept': 'application/json'
         }
+        #request card information
         response = requests.get(scryfall_url, headers=headers)
         card_data = response.json()
+        #check response status
         if response.status_code != 200:
             return None
         card: Card = Card.from_json(card_data)
 
+        #include images if requested
         if include_image:
             card.image_url = self.get_image_links(card_name)
 
+        #return the retrieved card
         return card
 
     def get_image_links(self, card_name: str) -> dict:
@@ -55,28 +63,43 @@ class ScryFallEngine:
         returns:
             dict - The image links as a dictionary.
         """
+        #ensure requests aren't sent to scryfall too frequently
         time.sleep(0.05)
+        #ensure there is a card name passed
         if not card_name:
             return None
+        #edit card name to adhere to standard uri conventions
         uriName = encodeURIName(card_name)
         scryfall_url = f"https://api.scryfall.com/cards/named?fuzzy={uriName}"
         headers = {
             'User-Agent': 'MysticTunerApp',
             'Accept': 'application/json'
         }
+        #request card image information
         response = requests.get(scryfall_url, headers=headers)
         card_data = response.json()
+        #check response status
         if response.status_code != 200:
             return None
+        #edit image urls provided
         keys_to_drop = ["png", "border_crop"]
         response_dict = card_data["image_uris"]
         for key in keys_to_drop:
             if key in response_dict:
                 del response_dict[key]
+        #return retrieved urls
         return response_dict
     
     @staticmethod
     def batch_validate(card_names: list[str]) -> list[list[str],int]:
+        """
+        Confirms that all cards provided are valid mtg cards.
+
+        params:
+            card_name: list[str] - list of card names that need to be validated.
+        returns:
+           list[list[str],int] - list of card names that were invalid and bool indicating wether or not all cards were validated.
+        """
         MAXBATCHSIZE = 37
         scryfall_url = "https://api.scryfall.com/cards/collection"
         headers = {
@@ -84,11 +107,9 @@ class ScryFallEngine:
             'Accept': 'application/json'
         }
         card_groups = [card_names[i:i + MAXBATCHSIZE] for i in range(0, len(card_names),MAXBATCHSIZE)]
-        # print(f'Number of groups: {len(card_groups)}')
         invalidNames = []
         potentialInvalidNames = []
         for group in card_groups:
-            # print(f'Group: {group}')
             data = {
                 'identifiers': []
             }
@@ -100,7 +121,6 @@ class ScryFallEngine:
                     data['identifiers'].append({"name": split_card[len(split_card)-1]})
                 else:
                     data['identifiers'].append({"name": card})
-            # print(f'Data: {data}')
             response = requests.post(scryfall_url, json=data, headers=headers)
             response_data = response.json()
             if response_data["not_found"] != []:
