@@ -83,7 +83,10 @@ class ScryFallEngine:
             return None
         #edit image urls provided
         keys_to_drop = ["png", "border_crop"]
-        response_dict = card_data["image_uris"]
+        if "card_faces" in card_data:
+            response_dict = card_data["card_faces"][0].get("image_uris")
+        else:
+            response_dict = card_data.get("image_uris")
         for key in keys_to_drop:
             if key in response_dict:
                 del response_dict[key]
