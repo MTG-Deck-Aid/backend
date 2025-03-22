@@ -39,6 +39,7 @@ class Deck:
         try:
             deck = cls.__new__(cls)
             deck._parse_json_deck(json_deck)
+            
             return deck
         except Exception as e:
             print("An error occured when parsing the deck JSON: ", e)
