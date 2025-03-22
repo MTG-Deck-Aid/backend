@@ -166,12 +166,17 @@ class ScryFallEngine:
         #ensure requested card is a legal commander card
         if card_data['legalities']['commander'] != 'legal':
             return None
-        if ("Legendary Creature" not in card_data['type_line']) and ("can be your commander" not in card_data['oracle_text']):
-            return None
-        multisided = card_data.get('card_faces', None)
-        if multisided and len(multisided) > 1:
-            return None
+        common_commander_subtypes = ["Planeswalker", "Creature"]
+        card_subtypes = []
+        oracle_overwrite = False
+        if "card_faces" in card_data:
+            card_subtypes = card_data['card_faces'][0]['type_line'].split()
+            oracle_overwrite = "can be your commander" in card_data['card_faces'][0]['oracle_text']
         else:
+            card_subtypes = card_data['type_line'].split()
+            oracle_overwrite = "can be your commander" in card_data['oracle_text']
+        # Check that "Legendary" and a "card_type" are independently in the card's subtypes
+        if ("Legendary" in card_subtypes and any(subtype in card_subtypes for subtype in common_commander_subtypes)) or oracle_overwrite:
             return Card.from_json(card_data)
         
     @staticmethod
