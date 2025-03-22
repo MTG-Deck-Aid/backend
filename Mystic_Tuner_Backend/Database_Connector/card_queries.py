@@ -121,6 +121,18 @@ class CardQueries():
             return results
         
         return self._update_count(results, cards, deck_id)
+    
+    def get_all_cards(self, deck_id):
+        """
+        args:
+            deck_id (int) - deck id
+        return:
+            (List) - all cards in the deck
+        """
+        query = "SELECT * FROM \"card\" WHERE \"deckid\" = %s ORDER BY id ASC;"
+        params = (deck_id,)
+
+        return self.connection.execute_query(query, params)
 
 
     #Helper functions

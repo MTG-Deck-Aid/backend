@@ -14,6 +14,7 @@ import json
 
 from Mystic_Tuner_Backend.deck_suggestions.deck_suggestion_controller import CardSuggestionController
 from Mystic_Tuner_Backend.security.security_controller import SecurityController
+from Database_Connector.user_meta_queries import UserMetaQueries
 
 # =========================================== NON-USER ROUTES  =========================================== #
 @api_view(["GET","POST", "PUT", "DELETE", "PATCH"])
@@ -181,6 +182,8 @@ def get_user_decks(request):
     user_decks = deck_queries.get_user_decks(user_id)
     print(f"user_decks: {user_decks}")
     if user_decks == None:
+        # Display the example deck
+        # 
         return Response({"decks": []}, status = 200)
     
     decks = []
@@ -288,15 +291,24 @@ def delete_deck(request):
     user_decks = deck_queries.get_user_decks(user_id)
     if user_decks == None:
         return Response({"Error" : "couldn't retrieve data"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    # Check that the deck belongs to the user, and that the deck id is correct
-    for usr_deck in user_decks:
-        usr_deck_user_id: int = usr_deck[4]
-        usr_deck_id:int = usr_deck[2]
-        if ((usr_deck_id == deck_id) and (usr_deck_user_id == user_id)):
-            deck_queries.delete_deck(user_id, deck_id)
-            return Response({"message": "Successfully deleted deck"}, status = 200)
-    return Response({"Error" : "Deck not found"}, status = status.HTTP_404_NOT_FOUND)
+    try:
+        # Check that the deck belongs to the user, and that the deck id is correct
+        for usr_deck in user_decks:
+            usr_deck_user_id: int = usr_deck[4]
+            usr_deck_id:int = usr_deck[2]
+            if ((usr_deck_id == deck_id) and (usr_deck_user_id == user_id)):
+                deck_queries.delete_deck(user_id, deck_id)
+            
+        # Delete all cards from the deck
+        card_queries = CardQueries()
+        cards = card_queries.get_all_cards(deck_id)
+        card_queries.delete_cards_from_deck(deck_id = deck_id, cards = [card[2] for card in cards])
+            
+        # Clean up check
+        _handle_deck_example(user_id, deck_id)
+        return Response({"message": "Successfully deleted deck"}, status = 200)
+    except Exception as e:
+        return Response({"Error" : "Deck not found"}, status = status.HTTP_404_NOT_FOUND)
 
 @ratelimit(key="ip", rate="30/m", method="PATCH", block=True)
 @api_view(["PATCH"])
@@ -504,8 +516,33 @@ def _check_auth(request) -> tuple[int, Response]:
         user_id: str = SecurityController().get_user_id(request.headers.get("Authorization").split(" ")[1])
         if user_id == -1:
             return user_id, Response({"error": "Invalid user token"}, status = 401)
+        elif type(user_id) == str:
+            _handle_new_user(user_id)
+            return user_id, None
         return user_id, None
     except Exception as e:
         return -1, Response({"Failed to Authenticate User": str(e)}, status = 401)
 
+
+def _handle_new_user(user_id: str) -> None:
+    """
+    Helper function to check if the user is new, if they are, add them to the database
+    """
+    user_meta_queries = UserMetaQueries()
+    result = user_meta_queries.user_exists(user_id)
+    if result == False:
+        print("User does not exist, creating new user.")
+        user_meta_queries.create_user(user_id)
+
+def _handle_deck_example(user_id: str, did: int) -> None:
+    """
+    Helper function to check if the user has deleted the example deck, if they have permanently
+    mark they're user meta as seen
+    """
+    user_meta_queries = UserMetaQueries()
+    response = user_meta_queries.get_example_deck(user_id)
+    example_did = response[0][0]
+    if int(example_did) == int(did):
+        print("User has deleted the example deck, marking user as seen.")
+        user_meta_queries.set_example_seen(user_id)
 

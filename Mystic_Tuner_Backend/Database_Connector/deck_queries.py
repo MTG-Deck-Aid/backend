@@ -1,11 +1,48 @@
 from Database_Connector.database_connector import DatabaseConnector
-
+from Database_Connector.card_queries import CardQueries
 class DeckQueries():
     """
     Class for creating queries related to the Deck Table
     """
     def __init__(self):
         self.connection = DatabaseConnector.get_instance()
+
+    def generate_example_deck(self, user_id: str) -> int:
+        """
+        Generates an example deck for the user.
+
+        args:
+            user_id (String) - the user's id
+        """
+        deck_queries = DeckQueries()
+        card_queries = CardQueries()
+        deck_queries.add_deck(user_id, "commander", "Example Deck", "Marchesa, The Black Rose")
+        decks = deck_queries.get_user_decks(user_id)
+        did = decks[-1][2]
+        print("Example Deck ID: ", did)
+        
+        cards = [
+        {'cardname': 'Marchesa, The Black Rose', 'sideboard': False, 'cardtype': None, 'count': 1},
+        {'cardname': 'Demonic Tutor', 'sideboard': False, 'cardtype': None, 'count': 1},
+        {'cardname': 'Counterspell', 'sideboard': False, 'cardtype': None, 'count': 1},
+        {'cardname': 'Negate', 'sideboard': False, 'cardtype': None, 'count': 1},
+        {'cardname': 'Chaos Warp', 'sideboard': False, 'cardtype': None, 'count': 1},
+        {'cardname': 'Swiftfoot Boots', 'sideboard': False, 'cardtype': None, 'count': 1},
+        {'cardname': 'Sol Ring', 'sideboard': False, 'cardtype': None, 'count': 1},
+        {'cardname': 'Talisman of Creativity', 'sideboard': False, 'cardtype': None, 'count': 1},
+        {'cardname': 'Talisman of Dominance', 'sideboard': False, 'cardtype': None, 'count': 1},
+        {'cardname': 'Talisman of Indulgence', 'sideboard': False, 'cardtype': None, 'count': 1},
+        {'cardname': 'Dauthi Voidwalker', 'sideboard': False, 'cardtype': None, 'count': 1},
+        {'cardname': 'Spark Double', 'sideboard': False, 'cardtype': None, 'count': 1},
+        {'cardname': 'Skullclamp', 'sideboard': False, 'cardtype': None, 'count': 1},
+        {'cardname': 'Swamp', 'sideboard': False, 'cardtype': None, 'count': 12},
+        {'cardname': 'Island', 'sideboard': False, 'cardtype': None, 'count': 12},
+        {'cardname': 'Mountain', 'sideboard': False, 'cardtype': None, 'count': 12},
+        ]
+
+        card_queries.add_cards_to_deck(cards, did)
+        print("Example Deck Created for new user.")
+        return did
 
     #CREATE
     def add_deck(self, user_id, deck_type, deck_name, commander):
